@@ -1,0 +1,25 @@
+<%- include('partials/header') %>
+<section class="choice-wrap">
+    <p class="small-title">WELCOME TO WOODORA</p>
+    <h1>How would you like to sign in?</h1>
+    <p class="choice-intro">Choose the option that matches your account.</p>
+
+    <div class="choice-grid">
+        <article class="choice-card">
+            <span class="choice-icon"><%- include('partials/icon', { name: 'user' }) %></span>
+            <h2>Customer Login</h2>
+            <p>Sign in to shop and manage your orders.</p>
+            <a href="/login/customer" class="btn btn-block btn-large">Customer Login</a>
+            <p class="choice-note">New here? <a href="/register">Create an account</a></p>
+        </article>
+
+        <article class="choice-card choice-admin">
+            <span class="choice-icon"><%- include('partials/icon', { name: 'shield' }) %></span>
+            <h2>Admin Login</h2>
+            <p>Access the administration dashboard.</p>
+            <a href="/admin/login" class="btn btn-block btn-large btn-dark">Admin Login</a>
+            <p class="choice-note">Administrators only</p>
+        </article>
+    </div>
+</section>
+<%- include('partials/footer') %>

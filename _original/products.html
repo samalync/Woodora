@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Woodora - Products</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="products-page">
+
+    <header>
+        <div class="logo">Woodora</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="products.html">Products</a>
+            <a href="impact.html">Impact</a>
+            <a href="our-mission.html">Our Mission</a>
+        </nav>
+    </header>
+
+    <section class="products-hero">
+        <h1>Our Wooden Collection</h1>
+        <p>Discover natural beauty for your kitchen.</p>
+    </section>
+
+    <section class="store-section">
+        <div class="store-grid" id="product-list"></div>
+    </section>
+
+    <section class="cart-section" id="cart">
+        <h2>Shopping Cart</h2>
+
+        <div id="cart-items">
+            <p>Your cart is empty.</p>
+        </div>
+
+        <h3>Total: <span id="cart-total">0</span> RWF</h3>
+
+        <button class="pay-button" onclick="payByCard()">
+            Pay by Card
+        </button>
+    </section>
+
+    <footer>
+        <h2>Woodora</h2>
+        <p>Natural wooden essentials for a thoughtful kitchen.</p>
+        <p>© 2026 Woodora. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        const products = [
+            {
+                name: "Wooden Utensil Holder",
+                price: 8000,
+                image: "images/images (1).jpeg"
+            },
+            {
+                name: "Wooden Bowl",
+                price: 12000,
+                image: "images/images (2).jpeg"
+            },
+            {
+                name: "Wooden Plate",
+                price: 10000,
+                image: "images/images (3).jpeg"
+            },
+            {
+                name: "Wooden Serving Tray",
+                price: 15000,
+                image: "images/images (4).jpeg"
+            },
+            {
+                name: "Wooden Cutting Board",
+                price: 18000,
+                image: "images/images (5).jpeg"
+            },
+            {
+                name: "Wooden Kitchen Tools",
+                price: 14000,
+                image: "images/images (6).jpeg"
+            },
+            {
+                name: "Wooden Mortar and Pestle",
+                price: 16000,
+                image: "images/images (7).jpeg"
+            },
+            {
+                name: "Wooden Kitchen Set",
+                price: 20000,
+                image: "images/images (8).jpeg"
+            },
+            {
+                name: "Wooden Spoons",
+                price: 9000,
+                image: "images/images.jpeg"
+            },
+            {
+                name: "Wooden Cups",
+                price: 12000,
+                image: "images/product10.jpeg"
+            },
+            {
+                name: "Wooden Bowl Set",
+                price: 22000,
+                image: "images/product11.jpeg"
+            },
+            {
+                name: "Wooden Storage Set",
+                price: 25000,
+                image: "images/product12.jpeg"
+            },
+            {
+                name: "Wooden Knife Holder",
+                price: 18000,
+                image: "images/product13.jpeg"
+            }
+        ];
+
+        let cart = [];
+
+        const productList = document.getElementById("product-list");
+
+        products.forEach((product, index) => {
+            productList.innerHTML += `
+                <div class="store-card">
+                    <img src="${product.image}" alt="${product.name}">
+
+                    <div class="store-info">
+                        <h3>${product.name}</h3>
+                        <p class="store-price">
+                            ${product.price.toLocaleString()} RWF
+                        </p>
+
+                        <button onclick="addToCart(${index})">
+                            Add to Cart
+                        </button>
+
+                        <button class="buy-now"
+                            onclick="buyNow(${index})">
+                            Buy Now
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+
+        function addToCart(index) {
+            cart.push(products[index]);
+            updateCart();
+        }
+
+        function buyNow(index) {
+            cart.push(products[index]);
+            updateCart();
+
+            document.getElementById("cart").scrollIntoView({
+                behavior: "smooth"
+            });
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartItems = document.getElementById("cart-items");
+            const totalElement = document.getElementById("cart-total");
+
+            cartItems.innerHTML = "";
+
+            if (cart.length === 0) {
+                cartItems.innerHTML = "<p>Your cart is empty.</p>";
+            }
+
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                total += item.price;
+
+                cartItems.innerHTML += `
+                    <div class="cart-item">
+                        <span>${item.name} - 
+                        ${item.price.toLocaleString()} RWF</span>
+
+                        <button onclick="removeFromCart(${index})">
+                            Remove
+                        </button>
+                    </div>
+                `;
+            });
+
+            totalElement.textContent = total.toLocaleString();
+        }
+
+        function payByCard() {
+            if (cart.length === 0) {
+                alert("Your shopping cart is empty.");
+            } else {
+                alert(
+                    "This is a demo payment. Connect a secure payment provider to accept real card payments."
+                );
+            }
+        }
+    </script>
+
+</body>
+</html>

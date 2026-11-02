@@ -1,0 +1,45 @@
+<%- include('../partials/admin-top') %>
+<div class="admin-page-head">
+    <div>
+        <h1>Dashboard</h1>
+        <p class="muted">Welcome back, <%= currentUser.name %>. Here is a quick overview of the shop.</p>
+    </div>
+    <a href="/admin/products/new" class="btn"><%- include('../partials/icon', { name: 'plus' }) %> Add product</a>
+</div>
+
+<div class="stat-grid">
+    <a class="stat" href="/admin/products"><span class="stat-icon"><%- include('../partials/icon', { name: 'box' }) %></span><span><strong><%= stats.products %></strong><small>Products</small></span></a>
+    <a class="stat <%= stats.lowStock > 0 ? 'stat-warn' : '' %>" href="/admin/products"><span class="stat-icon"><%- include('../partials/icon', { name: 'alert' }) %></span><span><strong><%= stats.lowStock %></strong><small>Low stock (5 or fewer)</small></span></a>
+    <a class="stat" href="/admin/orders"><span class="stat-icon"><%- include('../partials/icon', { name: 'orders' }) %></span><span><strong><%= stats.orders %></strong><small>Total orders</small></span></a>
+    <a class="stat <%= stats.pending > 0 ? 'stat-warn' : '' %>" href="/admin/orders?status=Pending"><span class="stat-icon"><%- include('../partials/icon', { name: 'truck' }) %></span><span><strong><%= stats.pending %></strong><small>Pending orders</small></span></a>
+    <a class="stat" href="/admin/orders"><span class="stat-icon"><%- include('../partials/icon', { name: 'cash' }) %></span><span><strong><%= rwf(stats.revenue) %></strong><small>Paid revenue</small></span></a>
+    <a class="stat" href="/admin/messages"><span class="stat-icon"><%- include('../partials/icon', { name: 'mail' }) %></span><span><strong><%= stats.messages %></strong><small>Customer messages</small></span></a>
+</div>
+
+<section class="panel">
+    <div class="panel-head">
+        <h2>Recent orders</h2>
+        <a href="/admin/orders">View all orders &rarr;</a>
+    </div>
+    <% if (recentOrders.length === 0) { %>
+        <p class="muted panel-empty">No orders yet. They will appear here when customers check out.</p>
+    <% } else { %>
+        <div class="table-wrap">
+        <table class="table">
+            <thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+            <% recentOrders.forEach(function (order) { %>
+                <tr>
+                    <td data-label="Order"><strong>#<%= order.id %></strong></td>
+                    <td data-label="Customer"><%= order.customer_name %></td>
+                    <td data-label="Total"><%= rwf(order.total) %></td>
+                    <td data-label="Status"><%- include('../partials/status-badges', { order: order }) %></td>
+                    <td class="actions"><a href="/admin/orders/<%= order.id %>" class="btn btn-outline btn-small">Open</a></td>
+                </tr>
+            <% }) %>
+            </tbody>
+        </table>
+        </div>
+    <% } %>
+</section>
+<%- include('../partials/admin-bottom') %>

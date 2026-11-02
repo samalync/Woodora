@@ -1,0 +1,33 @@
+<%- include('partials/header') %>
+<section class="auth-split">
+    <div class="auth-visual" style="background-image: url('/images/cups.jpeg')">
+        <div class="auth-visual-text">
+            <h2>Welcome back</h2>
+            <p>Sign in to check out faster and follow your orders.</p>
+        </div>
+    </div>
+    <div class="auth-panel">
+        <div class="auth-form">
+            <span class="choice-icon small"><%- include('partials/icon', { name: 'user' }) %></span>
+            <h1>Customer login</h1>
+            <p class="muted">Sign in to shop and manage your orders.</p>
+            <% if (error) { %><div class="form-alert" role="alert"><%- include('partials/icon', { name: 'alert' }) %> <span><%= error %><% if (error.includes('Admin Login')) { %> <a href="/admin/login">Go to Admin Login</a><% } %></span></div><% } %>
+            <form action="/login/customer" method="post" novalidate>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="next" value="<%= next %>">
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" value="<%= email %>" required autocomplete="email">
+                </div>
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn btn-block btn-large">Log in</button>
+            </form>
+            <p class="form-footer">New to Woodora? <a href="/register">Create an account</a></p>
+            <p class="form-footer small"><a href="/login">&larr; Back to login options</a></p>
+        </div>
+    </div>
+</section>
+<%- include('partials/footer') %>

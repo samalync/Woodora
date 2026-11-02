@@ -1,0 +1,32 @@
+<%- include('partials/header') %>
+<section class="auth-split auth-split-admin">
+    <div class="auth-visual" style="background-image: url('/images/woodora-background.jpeg')">
+        <div class="auth-visual-text">
+            <h2>Woodora administration</h2>
+            <p>Manage products, orders and customer messages.</p>
+        </div>
+    </div>
+    <div class="auth-panel">
+        <div class="auth-form">
+            <span class="choice-icon small dark"><%- include('partials/icon', { name: 'shield' }) %></span>
+            <h1>Admin login</h1>
+            <p class="muted">Access the administration dashboard. Authorised staff only.</p>
+            <% if (error) { %><div class="form-alert" role="alert"><%- include('partials/icon', { name: 'alert' }) %> <span><%= error %></span></div><% } %>
+            <form action="/admin/login" method="post" novalidate>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="next" value="<%= next %>">
+                <div class="field">
+                    <label for="email">Administrator email</label>
+                    <input type="email" id="email" name="email" value="<%= email %>" required autocomplete="username">
+                </div>
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn btn-block btn-large btn-dark">Log in to dashboard</button>
+            </form>
+            <p class="form-footer small"><a href="/login">&larr; Back to login options</a> &middot; <a href="/login/customer">Customer login</a></p>
+        </div>
+    </div>
+</section>
+<%- include('partials/footer') %>

@@ -1,0 +1,36 @@
+<%# Opens the administrator layout: top bar + sidebar. Close it with admin-bottom.ejs. Needs: title, optional "section" (sidebar highlight) %>
+<%- include('head') %>
+<body class="admin-body">
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="admin-topbar">
+    <a href="/admin" class="logo logo-light" aria-label="Woodora admin">
+        <svg class="logo-icon" viewBox="0 0 40 40" aria-hidden="true">
+            <circle cx="20" cy="20" r="19" fill="#c3a45d"/>
+            <circle cx="20" cy="20" r="13" fill="none" stroke="#2b1f14" stroke-width="2"/>
+            <circle cx="20" cy="20" r="7" fill="none" stroke="#2b1f14" stroke-width="2"/>
+            <circle cx="20" cy="20" r="2" fill="#2b1f14"/>
+        </svg>
+        <span>Woodora</span><small class="admin-tag">Admin</small>
+    </a>
+    <div class="admin-topbar-actions">
+        <a href="/" target="_blank" rel="noopener" class="topbar-link"><%- include('icon', { name: 'store' }) %> View store</a>
+        <span class="topbar-user"><%= currentUser.name %></span>
+        <form action="/logout" method="post" class="inline-form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button type="submit" class="topbar-link topbar-button"><%- include('icon', { name: 'logout' }) %> Log out</button>
+        </form>
+    </div>
+</header>
+
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <nav aria-label="Admin">
+            <a href="/admin" class="<%= currentPath === '/admin' ? 'active' : '' %>"><%- include('icon', { name: 'dashboard' }) %> Dashboard</a>
+            <a href="/admin/products" class="<%= currentPath.startsWith('/admin/products') ? 'active' : '' %>"><%- include('icon', { name: 'box' }) %> Products</a>
+            <a href="/admin/orders" class="<%= currentPath.startsWith('/admin/orders') ? 'active' : '' %>"><%- include('icon', { name: 'orders' }) %> Orders</a>
+            <a href="/admin/messages" class="<%= currentPath.startsWith('/admin/messages') ? 'active' : '' %>"><%- include('icon', { name: 'mail' }) %> Messages</a>
+        </nav>
+    </aside>
+    <main id="main" class="admin-main">
+        <%- include('flash') %>

@@ -1,0 +1,10 @@
+<%# A labelled form field with its error message. Needs: name, label, type, values, errors. Optional: attrs, hint %>
+<div class="field <%= errors[name] ? 'has-error' : '' %>">
+    <label for="<%= name %>"><%= label %></label>
+    <% if (typeof hint !== 'undefined' && hint) { %><small class="muted" id="<%= name %>-hint"><%= hint %></small><% } %>
+    <input type="<%= type %>" id="<%= name %>" name="<%= name %>"
+           value="<%= (type === 'password' || !values[name]) ? '' : values[name] %>"
+           <%- typeof attrs !== 'undefined' ? attrs : '' %>
+           <%- errors[name] ? 'aria-invalid="true" aria-describedby="' + name + '-error"' : '' %>>
+    <% if (errors[name]) { %><p class="error-text" id="<%= name %>-error"><%= errors[name] %></p><% } %>
+</div>

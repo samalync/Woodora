@@ -1,0 +1,58 @@
+<%- include('../partials/admin-top') %>
+<div class="admin-page-head">
+    <div>
+        <p class="breadcrumb"><a href="/admin/products">Products</a> <span>/</span> <%= title %></p>
+        <h1><%= title %></h1>
+    </div>
+</div>
+
+<form action="<%= action %>" method="post" class="panel admin-form" novalidate>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <div class="admin-form-grid">
+        <div>
+            <%- include('../partials/field', { name: 'name', label: 'Product name', type: 'text', values: product, errors, attrs: 'required maxlength="80"' }) %>
+            <div class="field <%= errors.description ? 'has-error' : '' %>">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="5" maxlength="500"><%= product.description %></textarea>
+                <% if (errors.description) { %><p class="error-text"><%= errors.description %></p><% } %>
+            </div>
+            <div class="field-row">
+                <%- include('../partials/field', { name: 'price', label: 'Price (RWF)', type: 'number', values: product, errors, attrs: 'required min="1" step="1"' }) %>
+                <%- include('../partials/field', { name: 'stock', label: 'Stock quantity', type: 'number', values: product, errors, attrs: 'required min="0" step="1"' }) %>
+            </div>
+        </div>
+        <div>
+            <div class="field <%= errors.category_id ? 'has-error' : '' %>">
+                <label for="category_id">Category</label>
+                <select id="category_id" name="category_id" required>
+                    <option value="">Choose...</option>
+                    <% categories.forEach(function (c) { %>
+                        <option value="<%= c.id %>" <%= String(product.category_id) === String(c.id) ? 'selected' : '' %>><%= c.name %></option>
+                    <% }) %>
+                </select>
+                <% if (errors.category_id) { %><p class="error-text"><%= errors.category_id %></p><% } %>
+            </div>
+            <div class="field <%= errors.image ? 'has-error' : '' %>">
+                <label for="image">Image</label>
+                <select id="image" name="image" required data-preview="image-preview">
+                    <option value="">Choose...</option>
+                    <% images.forEach(function (file) { %>
+                        <option value="<%= file %>" <%= product.image === file ? 'selected' : '' %>><%= file %></option>
+                    <% }) %>
+                </select>
+                <small class="muted">To use a new picture, copy it into the public/images folder first.</small>
+                <% if (errors.image) { %><p class="error-text"><%= errors.image %></p><% } %>
+                <div class="image-preview"><img id="image-preview" src="<%= product.image ? '/images/' + product.image : '' %>" alt="Selected product image" <%= product.image ? '' : 'hidden' %>></div>
+            </div>
+            <label class="checkbox">
+                <input type="checkbox" name="featured" value="1" <%= product.featured ? 'checked' : '' %>>
+                Show on the home page as a featured product
+            </label>
+        </div>
+    </div>
+    <div class="button-row">
+        <button type="submit" class="btn btn-large">Save product</button>
+        <a href="/admin/products" class="btn btn-outline btn-large">Cancel</a>
+    </div>
+</form>
+<%- include('../partials/admin-bottom') %>

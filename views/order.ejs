@@ -1,0 +1,34 @@
+<%- include('partials/header') %>
+<section class="page-hero compact">
+    <h1>Order #<%= order.id %></h1>
+    <%- include('partials/checkout-steps', { step: (order.payment_status === 'Paid' || order.payment_method === 'cod') ? 4 : 3 }) %>
+    <p><%- include('partials/status-badges', { order: order }) %></p>
+</section>
+<section class="section checkout-layout">
+    <div class="card">
+        <h2>Items</h2>
+        <ul class="summary-list">
+            <% items.forEach(function (item) { %>
+                <li><span><%= item.product_name %> <small class="muted">&times; <%= item.quantity %> (<%= rwf(item.unit_price) %> each)</small></span><strong><%= rwf(item.unit_price * item.quantity) %></strong></li>
+            <% }) %>
+        </ul>
+        <p class="row cart-total"><span>Total</span><strong><%= rwf(order.total) %></strong></p>
+        <% if (order.payment_status === 'Unpaid' && order.payment_method !== 'cod') { %>
+            <p><a href="/orders/<%= order.id %>/pay" class="btn">Pay now (simulated)</a></p>
+        <% } %>
+        <% if (order.payment_method === 'cod' && order.payment_status === 'Unpaid') { %>
+            <p class="notice">Cash on Delivery: please pay <%= rwf(order.total) %> in cash when your order arrives.</p>
+        <% } %>
+    </div>
+    <aside class="card summary">
+        <h2>Delivery details</h2>
+        <p><strong><%= order.customer_name %></strong></p>
+        <p><%= order.address %>, <%= order.city %></p>
+        <p>Phone: <%= order.phone %></p>
+        <p>Email: <%= order.email %></p>
+        <p>Payment: <%= methodName %></p>
+        <p>Placed: <%= order.created_at %></p>
+        <p><a href="/orders">&larr; All my orders</a></p>
+    </aside>
+</section>
+<%- include('partials/footer') %>

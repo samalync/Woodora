@@ -1,0 +1,34 @@
+<%- include('partials/header') %>
+<section class="page-hero compact">
+    <p class="small-title">YOUR ACCOUNT</p>
+    <h1>My Orders</h1>
+</section>
+<section class="section">
+<% if (orders.length === 0) { %>
+    <div class="empty-state"><%- include('partials/icon', { name: 'orders' }) %><p>You have not placed any orders yet.</p><a href="/products" class="btn">Start shopping</a></div>
+<% } else { %>
+    <div class="table-wrap">
+    <table class="table">
+        <thead><tr><th>Order</th><th>Date</th><th>Total</th><th>Payment method</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        <% orders.forEach(function (order) { %>
+            <tr>
+                <td data-label="Order"><strong>#<%= order.id %></strong></td>
+                <td data-label="Date"><%= order.created_at.slice(0, 10) %></td>
+                <td data-label="Total"><%= rwf(order.total) %></td>
+                <td data-label="Payment method"><%= methods[order.payment_method] %></td>
+                <td data-label="Status"><%- include('partials/status-badges', { order: order }) %></td>
+                <td class="actions">
+                    <a href="/orders/<%= order.id %>" class="btn btn-outline btn-small">View</a>
+                    <% if (order.payment_status === 'Unpaid' && order.payment_method !== 'cod') { %>
+                        <a href="/orders/<%= order.id %>/pay" class="btn btn-small">Pay now</a>
+                    <% } %>
+                </td>
+            </tr>
+        <% }) %>
+        </tbody>
+    </table>
+    </div>
+<% } %>
+</section>
+<%- include('partials/footer') %>

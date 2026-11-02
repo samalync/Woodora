@@ -1,0 +1,47 @@
+<%- include('partials/header') %>
+<section class="page-hero compact">
+    <h1>Checkout</h1>
+    <%- include('partials/checkout-steps', { step: 2 }) %>
+</section>
+<section class="section checkout-layout">
+    <form action="/checkout" method="post" class="card" novalidate>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <h2><span class="num">1</span> Contact and delivery</h2>
+        <%- include('partials/field', { name: 'name', label: 'Full name', type: 'text', values, errors, attrs: 'required maxlength="60"' }) %>
+        <div class="field-row">
+            <%- include('partials/field', { name: 'email', label: 'Email', type: 'email', values, errors, attrs: 'required maxlength="100"' }) %>
+            <%- include('partials/field', { name: 'phone', label: 'Phone number', type: 'tel', values, errors, attrs: 'required maxlength="20" placeholder="0788 123 456"' }) %>
+        </div>
+        <%- include('partials/field', { name: 'address', label: 'Delivery address', type: 'text', values, errors, attrs: 'required maxlength="200" placeholder="Street, sector, landmark"' }) %>
+        <%- include('partials/field', { name: 'city', label: 'City / District', type: 'text', values, errors, attrs: 'required maxlength="60" placeholder="Kigali"' }) %>
+
+        <h2><span class="num">2</span> Payment method</h2>
+        <div class="notice">Online payments on this website are <strong>simulations</strong>. No real money is charged and no card or PIN is stored.</div>
+        <fieldset class="methods <%= errors.method ? 'has-error' : '' %>">
+            <legend class="sr-only">Payment method</legend>
+            <% const methodIcons = { momo: 'phone', card: 'card', cod: 'cash' }; %>
+            <% Object.keys(methods).forEach(function (key) { %>
+                <label class="method">
+                    <input type="radio" name="method" value="<%= key %>" <%= values.method === key ? 'checked' : '' %>>
+                    <span class="method-icon"><%- include('partials/icon', { name: methodIcons[key] }) %></span>
+                    <span><strong><%= methods[key] %></strong>
+                    <small><%= key === 'momo' ? 'Approve a payment request on your phone (demo).' : key === 'card' ? 'Enter test card details on the next page (demo).' : 'Pay in cash when your order arrives.' %></small></span>
+                </label>
+            <% }) %>
+            <% if (errors.method) { %><p class="error-text"><%= errors.method %></p><% } %>
+        </fieldset>
+        <button type="submit" class="btn btn-block btn-large">Place order</button>
+    </form>
+
+    <aside class="card summary">
+        <h2>Order summary</h2>
+        <ul class="summary-list">
+            <% cart.items.forEach(function (item) { %>
+                <li><img src="/images/<%= item.image %>" alt=""><span><%= item.name %> <small class="muted">&times; <%= item.quantity %></small></span><strong><%= rwf(item.lineTotal) %></strong></li>
+            <% }) %>
+        </ul>
+        <p class="row cart-total"><span>Total</span><strong><%= rwf(cart.total) %></strong></p>
+        <p><a href="/cart">&larr; Edit cart</a></p>
+    </aside>
+</section>
+<%- include('partials/footer') %>

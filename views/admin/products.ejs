@@ -1,0 +1,41 @@
+<%- include('../partials/admin-top') %>
+<div class="admin-page-head">
+    <div>
+        <h1>Products</h1>
+        <p class="muted"><%= products.length %> products in the shop. Edit prices, stock and details here.</p>
+    </div>
+    <a href="/admin/products/new" class="btn"><%- include('../partials/icon', { name: 'plus' }) %> Add product</a>
+</div>
+
+<section class="panel">
+    <div class="table-wrap">
+    <table class="table">
+        <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Featured</th><th>Actions</th></tr></thead>
+        <tbody>
+        <% products.forEach(function (p) { %>
+            <tr>
+                <td data-label="Product">
+                    <div class="cart-product"><img class="thumb" src="/images/<%= p.image %>" alt=""><strong><%= p.name %></strong></div>
+                </td>
+                <td data-label="Category"><%= p.category %></td>
+                <td data-label="Price"><%= rwf(p.price) %></td>
+                <td data-label="Stock">
+                    <% if (p.stock === 0) { %><span class="badge badge-pay-unpaid">Sold out</span>
+                    <% } else if (p.stock <= 5) { %><span class="badge badge-pending"><%= p.stock %> left</span>
+                    <% } else { %><span class="badge badge-paid"><%= p.stock %></span><% } %>
+                </td>
+                <td data-label="Featured"><%= p.featured ? 'Yes' : '-' %></td>
+                <td class="actions">
+                    <a href="/admin/products/<%= p.id %>/edit" class="btn btn-outline btn-small"><%- include('../partials/icon', { name: 'edit' }) %> Edit</a>
+                    <form action="/admin/products/<%= p.id %>/delete" method="post" class="inline-form" data-confirm="Delete &quot;<%= p.name %>&quot;? This cannot be undone.">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <button type="submit" class="btn btn-ghost-danger btn-small"><%- include('../partials/icon', { name: 'trash' }) %> Delete</button>
+                    </form>
+                </td>
+            </tr>
+        <% }) %>
+        </tbody>
+    </table>
+    </div>
+</section>
+<%- include('../partials/admin-bottom') %>

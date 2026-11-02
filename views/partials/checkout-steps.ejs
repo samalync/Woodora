@@ -1,0 +1,6 @@
+<%# Progress indicator. Needs: step (1 Cart, 2 Details, 3 Payment, 4 Done) %>
+<ol class="steps-bar" aria-label="Checkout progress">
+    <% ['Cart', 'Details', 'Payment', 'Done'].forEach(function (label, i) { %>
+        <li class="<%= i + 1 < step ? 'done' : (i + 1 === step ? 'current' : '') %>" <%- i + 1 === step ? 'aria-current="step"' : '' %>><span><%= i + 1 < step ? '✓' : i + 1 %></span><%= label %></li>
+    <% }) %>
+</ol>

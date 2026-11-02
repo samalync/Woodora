@@ -1,0 +1,48 @@
+<%- include('partials/header') %>
+
+<section class="page-hero">
+    <p class="small-title">THE COLLECTION</p>
+    <h1>Our Wooden Collection</h1>
+    <p>Discover natural beauty for your kitchen.</p>
+</section>
+
+<section class="section">
+    <form action="/products" method="get" class="search-bar" role="search">
+        <% if (categoryId) { %><input type="hidden" name="category" value="<%= categoryId %>"><% } %>
+        <label for="q" class="sr-only">Search products</label>
+        <span class="search-box">
+            <%- include('partials/icon', { name: 'search' }) %>
+            <input type="search" id="q" name="q" value="<%= search %>" maxlength="60" placeholder="Search bowls, spoons, trays...">
+        </span>
+        <button type="submit" class="btn">Search</button>
+    </form>
+
+    <!-- Category filter: each pill keeps the current search words -->
+    <nav class="pills" aria-label="Filter by category">
+        <a href="/products<%= search ? '?q=' + encodeURIComponent(search) : '' %>" class="pill <%= categoryId === 0 ? 'active' : '' %>">All</a>
+        <% categories.forEach(function (c) { %>
+            <a href="/products?category=<%= c.id %><%= search ? '&q=' + encodeURIComponent(search) : '' %>" class="pill <%= categoryId === c.id ? 'active' : '' %>"><%= c.name %></a>
+        <% }) %>
+    </nav>
+
+    <p class="result-count">
+        <%= products.length %> product<%= products.length === 1 ? '' : 's' %> found<%= search ? ' for "' + search + '"' : '' %>
+        <% if (search || categoryId) { %> &middot; <a href="/products">Clear filters</a><% } %>
+    </p>
+
+    <% if (products.length === 0) { %>
+        <div class="empty-state">
+            <%- include('partials/icon', { name: 'search' }) %>
+            <p>No products match your search. Try a different word or category.</p>
+            <a href="/products" class="btn">Show all products</a>
+        </div>
+    <% } else { %>
+        <div class="product-grid">
+            <% products.forEach(function (product) { %>
+                <%- include('partials/product-card', { product: product }) %>
+            <% }) %>
+        </div>
+    <% } %>
+</section>
+
+<%- include('partials/footer') %>

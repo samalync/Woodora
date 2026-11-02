@@ -1,0 +1,40 @@
+<%- include('../partials/admin-top') %>
+<div class="admin-page-head">
+    <div>
+        <h1>Orders</h1>
+        <p class="muted">Open an order to see its items and change its status.</p>
+    </div>
+</div>
+
+<nav class="pills" aria-label="Filter orders by status">
+    <a href="/admin/orders" class="pill <%= filter === '' ? 'active' : '' %>">All</a>
+    <% statuses.forEach(function (s) { %>
+        <a href="/admin/orders?status=<%= s %>" class="pill <%= filter === s ? 'active' : '' %>"><%= s %></a>
+    <% }) %>
+</nav>
+
+<section class="panel">
+    <% if (orders.length === 0) { %>
+        <p class="muted panel-empty">No orders found.</p>
+    <% } else { %>
+        <div class="table-wrap">
+        <table class="table">
+            <thead><tr><th>Order</th><th>Date</th><th>Customer</th><th>Total</th><th>Method</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+            <% orders.forEach(function (order) { %>
+                <tr>
+                    <td data-label="Order"><strong>#<%= order.id %></strong></td>
+                    <td data-label="Date"><%= order.created_at.slice(0, 10) %></td>
+                    <td data-label="Customer"><%= order.customer_name %></td>
+                    <td data-label="Total"><%= rwf(order.total) %></td>
+                    <td data-label="Method"><%= order.payment_method.toUpperCase() %></td>
+                    <td data-label="Status"><%- include('../partials/status-badges', { order: order }) %></td>
+                    <td class="actions"><a href="/admin/orders/<%= order.id %>" class="btn btn-outline btn-small">Open</a></td>
+                </tr>
+            <% }) %>
+            </tbody>
+        </table>
+        </div>
+    <% } %>
+</section>
+<%- include('../partials/admin-bottom') %>

@@ -1,0 +1,988 @@
+/* GENERAL SETTINGS */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    color: #382719;
+    background-color: #f5ead8;
+
+    background-image: url("images/woodora-background.jpeg");
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+
+/* HEADER */
+
+header {
+    width: 100%;
+    padding: 20px 8%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 250, 240, 0.92);
+}
+
+.logo {
+    font-family: Georgia, serif;
+    font-size: 30px;
+    font-weight: bold;
+    color: #53351d;
+}
+
+nav {
+    display: flex;
+    gap: 30px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #382719;
+    font-size: 16px;
+}
+
+nav a:hover {
+    color: #b47b19;
+}
+
+
+/* HERO SECTION */
+
+.hero {
+    min-height: 550px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 70px 20px;
+}
+
+.hero-content {
+    max-width: 700px;
+}
+
+.small-title {
+    color: #a8751c;
+    letter-spacing: 3px;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.hero h1 {
+    font-family: Georgia, serif;
+    font-size: 55px;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.hero-content > p:not(.small-title) {
+    font-size: 18px;
+    line-height: 1.7;
+    margin-bottom: 30px;
+}
+
+
+/* BUTTONS */
+
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-block;
+    padding: 14px 28px;
+    background-color: #a8751c;
+    color: white;
+    border: 1px solid #a8751c;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background-color: #805414;
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: #8b6018;
+}
+
+
+/* COLLECTION */
+
+.collection {
+    padding: 70px 8%;
+    text-align: center;
+}
+
+.section-title {
+    font-family: Georgia, serif;
+    font-size: 38px;
+    margin-bottom: 15px;
+}
+
+.section-description {
+    font-size: 17px;
+    margin-bottom: 40px;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.product-card {
+    background: rgba(255, 250, 240, 0.95);
+    border-radius: 12px;
+    overflow: hidden;
+    text-align: left;
+    box-shadow: 0 5px 18px rgba(70, 45, 20, 0.12);
+}
+
+.product-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.product-info {
+    padding: 20px;
+}
+
+.product-info h3 {
+    font-family: Georgia, serif;
+    font-size: 22px;
+    margin-bottom: 12px;
+}
+
+.product-info p {
+    font-size: 15px;
+    line-height: 1.6;
+}
+/* Product prices */
+.product-price {
+    font-size: 17px;
+    font-weight: bold;
+    margin: 12px 0;
+    color: #5b432e;
+}
+
+/* Buy Now button */
+.buy-button {
+    background-color: #5b432e;
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 15px;
+    margin-top: 8px;
+}
+
+.buy-button:hover {
+    background-color: #3e2d20;
+}
+
+/* Payment section */
+.payment-section {
+    text-align: center;
+    padding: 50px 20px;
+    background: rgba(250, 248, 241, 0.85);
+}
+
+.payment-section h2 {
+    margin-bottom: 15px;
+}
+
+.payment-section p {
+    margin-bottom: 18px;
+}
+
+.card-button {
+    background-color: #5b432e;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.card-button:hover {
+    background-color: #3e2d20;
+}
+
+.payment-note {
+    font-size: 13px;
+    color: #666;
+    margin-top: 12px;
+}
+
+/* ===== WOODORA IMPACT PAGE ===== */
+
+/* ===== GENERAL STYLES ===== */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* ===== WOODORA IMPACT PAGE ===== */
+
+.impact-page {
+    background-image: url("images/woodora-background.jpeg");
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #29251f;
+}
+
+/* Header */
+.impact-header {
+    min-height: 75px;
+    padding: 0 8%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 253, 248, 0.94);
+    border-bottom: 1px solid #eee8dc;
+}
+
+.impact-logo {
+    color: #70522d;
+    font-family: Georgia, serif;
+    font-size: 27px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.impact-header nav {
+    display: flex;
+    gap: 30px;
+}
+
+.impact-header nav a {
+    color: #333;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.impact-header nav a:hover {
+    color: #b99a55;
+}
+
+/* Hero Section */
+.impact-hero {
+    text-align: center;
+    padding: 90px 20px 100px;
+    background: rgba(250, 248, 241, 0.86);
+}
+
+.impact-hero span {
+    color: #aa8d4b;
+    letter-spacing: 3px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.impact-hero h1 {
+    max-width: 750px;
+    margin: 25px auto;
+    font-family: Georgia, serif;
+    font-size: 48px;
+    line-height: 1.2;
+    font-weight: normal;
+}
+
+.impact-hero p {
+    max-width: 700px;
+    margin: 25px auto 0;
+    color: #555;
+    font-size: 18px;
+    line-height: 1.8;
+}
+
+/* Before and After */
+.before-after {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 35px;
+    padding: 70px 8%;
+    background: rgba(250, 248, 241, 0.65);
+}
+
+.impact-card {
+    background: rgba(248, 245, 237, 0.94);
+    border: 1px solid #e9e2d5;
+    border-radius: 16px;
+    padding: 40px;
+}
+
+.impact-card h2 {
+    color: #987b43;
+    font-family: Georgia, serif;
+    font-size: 27px;
+    font-weight: normal;
+}
+
+.impact-card p {
+    color: #555;
+    line-height: 1.8;
+    font-size: 17px;
+}
+
+/* Quote */
+.impact-quote {
+    background: #191919;
+    color: white;
+    text-align: center;
+    padding: 85px 15%;
+}
+
+.impact-quote h2 {
+    max-width: 850px;
+    margin: auto;
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 30px;
+    line-height: 1.5;
+    font-weight: normal;
+}
+
+.impact-quote p {
+    color: #c3a45d;
+    margin-top: 25px;
+    font-size: 16px;
+}
+
+/* Benefits */
+.impact-benefits {
+    padding: 85px 8%;
+    text-align: center;
+    background: rgba(250, 248, 241, 0.88);
+}
+
+.impact-benefits h2 {
+    font-family: Georgia, serif;
+    font-size: 32px;
+    font-weight: normal;
+    margin-bottom: 50px;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+}
+
+.benefit-card {
+    background: rgba(248, 245, 237, 0.95);
+    border: 1px solid #e9e2d5;
+    border-radius: 13px;
+    padding: 25px 18px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-align: left;
+}
+
+.benefit-card span {
+    background: #eadfbe;
+    color: #806532;
+    min-width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.benefit-card p {
+    color: #555;
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+/* Statistics */
+.impact-stats {
+    background: #191919;
+    color: white;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    text-align: center;
+    padding: 65px 5%;
+    gap: 25px;
+}
+
+.impact-stats h2 {
+    color: #c3a45d;
+    font-family: Georgia, serif;
+    font-size: 42px;
+    font-weight: normal;
+    margin: 0 0 15px;
+}
+
+.impact-stats p {
+    font-size: 15px;
+    color: #eee;
+}
+
+/* Call to Action */
+.impact-cta {
+    text-align: center;
+    padding: 85px 20px;
+    background: rgba(250, 248, 241, 0.88);
+}
+
+.impact-cta h2 {
+    font-family: Georgia, serif;
+    font-size: 32px;
+    font-weight: normal;
+}
+
+.impact-cta p {
+    color: #666;
+    font-size: 17px;
+    margin-bottom: 35px;
+}
+
+.impact-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+}
+
+.shop-button,
+.contact-button {
+    padding: 16px 32px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.shop-button {
+    background: #c3a45d;
+    color: #191919;
+}
+
+.contact-button {
+    border: 2px solid #c3a45d;
+    color: #806532;
+}
+
+.shop-button:hover {
+    background: #a88a49;
+}
+
+.contact-button:hover {
+    background: #c3a45d;
+    color: white;
+}
+
+/* Footer */
+.impact-footer {
+    background: #191919;
+    color: #ddd;
+    text-align: center;
+    padding: 25px;
+    font-size: 14px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+
+    .impact-header {
+        flex-direction: column;
+        padding: 20px;
+        gap: 18px;
+    }
+
+    .impact-header nav {
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .impact-hero {
+        padding: 65px 20px;
+    }
+
+    .impact-hero h1 {
+        font-size: 34px;
+    }
+
+    .before-after {
+        grid-template-columns: 1fr;
+        padding: 40px 20px;
+    }
+
+    .benefits-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .impact-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .impact-quote h2 {
+        font-size: 23px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .benefits-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .impact-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .shop-button,
+    .contact-button {
+        width: 180px;
+        text-align: center;
+    }
+
+    .impact-stats h2 {
+        font-size: 32px;
+    }
+}
+/* Make background image more visible */
+
+.impact-hero {
+    background: rgba(250, 248, 241, 0.25);
+}
+
+.before-after {
+    background: rgba(250, 248, 241, 0.15);
+}
+
+.impact-benefits {
+    background: rgba(250, 248, 241, 0.25);
+}
+
+.impact-cta {
+    background: rgba(250, 248, 241, 0.25);
+}
+
+.impact-card,
+.benefit-card {
+    background: rgba(248, 245, 237, 0.75);
+}/* PRODUCTS PAGE */
+
+.products-page {
+    margin: 0;
+}
+
+.products-hero {
+    text-align: center;
+    padding: 65px 20px;
+    background: rgba(250, 248, 241, 0.85);
+}
+
+.products-hero h1 {
+    color: #493522;
+    font-size: 36px;
+}
+
+.products-hero p {
+    color: #665544;
+}
+
+.store-section {
+    padding: 45px 6%;
+}
+
+.store-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
+}
+
+.store-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    overflow: hidden;
+    text-align: center;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+    padding-bottom: 20px;
+}
+
+.store-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.store-info {
+    padding: 15px;
+}
+
+.store-info h3 {
+    color: #493522;
+}
+
+.store-price {
+    font-weight: bold;
+    color: #705238;
+    font-size: 18px;
+}
+
+.store-info button,
+.pay-button {
+    background: #5b432e;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.store-info button:hover,
+.pay-button:hover {
+    background: #3e2d20;
+}
+
+.store-info .buy-now {
+    background: #92704d;
+}
+
+.cart-section {
+    padding: 40px 8%;
+    text-align: center;
+    background: rgba(250, 248, 241, 0.9);
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    margin: 10px auto;
+    max-width: 600px;
+    background: white;
+    border-radius: 6px;
+}
+
+.cart-item button {
+    background: #8b4034;
+    color: white;
+    border: none;
+    padding: 7px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pay-button {
+    padding: 13px 30px;
+    font-size: 16px;
+}
+
+@media (max-width: 500px) {
+    .cart-item {
+        flex-direction: column;
+    }
+
+    .products-hero h1 {
+        font-size: 27px;
+    }
+}
+/* OUR MISSION PAGE */
+
+.mission-page {
+    margin: 0;
+    color: #28251f;
+    background-image:
+        linear-gradient(
+            rgba(250, 248, 241, 0.45),
+            rgba(250, 248, 241, 0.45)
+        ),
+        url("images/woodora-background.jpeg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+
+/* Header */
+
+.mission-header {
+    background: rgba(250, 248, 241, 0.96);
+    padding: 20px 8%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e9e4d8;
+}
+
+.mission-header nav {
+    display: flex;
+    gap: 30px;
+}
+
+.mission-header nav a {
+    text-decoration: none;
+    color: #29251f;
+    font-size: 15px;
+}
+
+.mission-header nav a:hover {
+    color: #a58a48;
+}
+
+/* Introduction */
+
+.mission-intro {
+    text-align: center;
+    padding: 100px 20px;
+    max-width: 850px;
+    margin: auto;
+}
+
+.mission-label {
+    color: #a58a48;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 3px;
+}
+
+.mission-intro h1 {
+    font-family: Georgia, serif;
+    font-size: 46px;
+    font-weight: normal;
+    line-height: 1.2;
+    margin: 25px 0;
+}
+
+.mission-intro > p:last-child {
+    color: #66615a;
+    font-size: 17px;
+    line-height: 1.7;
+}
+
+/* Image and Text Sections */
+
+.mission-split {
+    display: flex;
+    align-items: center;
+    gap: 55px;
+    padding: 65px 8%;
+}
+
+.mission-text {
+    flex: 1;
+}
+
+.mission-text h2 {
+    font-family: Georgia, serif;
+    font-size: 32px;
+    font-weight: normal;
+    line-height: 1.3;
+}
+
+.mission-text p {
+    color: #625e57;
+    line-height: 1.8;
+    font-size: 16px;
+}
+
+.mission-image {
+    flex: 1;
+}
+
+.mission-image img {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+/* Craftsmanship */
+
+.craft-section {
+    padding: 80px 8%;
+    text-align: center;
+}
+
+.craft-heading {
+    max-width: 700px;
+    margin: 0 auto 45px;
+}
+
+.craft-heading h2 {
+    font-family: Georgia, serif;
+    font-size: 34px;
+    font-weight: normal;
+}
+
+.craft-heading p {
+    color: #625e57;
+    line-height: 1.7;
+}
+
+.craft-image {
+    max-width: 1000px;
+    height: 390px;
+    margin: auto;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.craft-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(65%);
+}
+
+.craft-quote {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 85%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-family: Georgia, serif;
+    font-size: 27px;
+}
+
+/* Community */
+
+.community-section {
+    padding-top: 75px;
+    padding-bottom: 90px;
+}
+
+.mission-button {
+    display: inline-block;
+    background: #c4a65b;
+    color: #28251f;
+    text-decoration: none;
+    padding: 15px 28px;
+    border-radius: 6px;
+    margin-top: 15px;
+}
+
+/* Vision */
+
+.mission-vision {
+    background: #1c1b19;
+    color: white;
+    text-align: center;
+    padding: 90px 20px;
+}
+
+.mission-vision h2 {
+    font-family: Georgia, serif;
+    font-size: 38px;
+    font-weight: normal;
+}
+
+.mission-vision > p:not(.mission-label) {
+    max-width: 700px;
+    margin: 25px auto;
+    color: #dedbd4;
+    line-height: 1.8;
+    font-size: 16px;
+}
+
+.vision-buttons {
+    margin-top: 35px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.vision-button,
+.vision-outline {
+    display: inline-block;
+    padding: 14px 25px;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.vision-button {
+    background: #c4a65b;
+    color: #211f1b;
+}
+
+.vision-outline {
+    color: #c4a65b;
+    border: 1px solid #c4a65b;
+}
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+    .mission-header {
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .mission-header nav {
+        gap: 14px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .mission-intro {
+        padding: 65px 20px;
+    }
+
+    .mission-intro h1 {
+        font-size: 34px;
+    }
+
+    .mission-split {
+        flex-direction: column;
+        padding: 40px 6%;
+        gap: 25px;
+    }
+
+    .community-section {
+        flex-direction: column;
+    }
+
+    .mission-image img {
+        height: 280px;
+    }
+
+    .craft-image {
+        height: 280px;
+    }
+
+    .craft-quote {
+        font-size: 21px;
+    }
+
+    .mission-vision h2 {
+        font-size: 30px;
+    }
+}

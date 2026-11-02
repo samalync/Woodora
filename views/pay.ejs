@@ -1,0 +1,46 @@
+<%- include('partials/header') %>
+<section class="page-hero compact">
+    <h1>Pay for Order #<%= order.id %></h1>
+    <%- include('partials/checkout-steps', { step: 3 }) %>
+    <p>Amount due: <strong><%= rwf(order.total) %></strong> &middot; <%= methodName %></p>
+</section>
+<section class="section narrow-section">
+    <div class="notice notice-strong">SIMULATION ONLY &mdash; no real payment is made. Nothing you type here is stored.</div>
+
+    <% if (order.payment_method === 'momo') { %>
+        <% if (!momoStep) { %>
+            <form action="/orders/<%= order.id %>/pay/momo" method="post" class="card" novalidate>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <h2>Mobile Money</h2>
+                <%- include('partials/field', { name: 'momoPhone', label: 'Mobile Money phone number', type: 'tel', values, errors, attrs: 'required placeholder="0788 123 456"', hint: 'We will pretend to send a payment request to this number.' }) %>
+                <button type="submit" class="btn btn-block btn-large">Send payment request</button>
+            </form>
+        <% } else { %>
+            <div class="card">
+                <h2>Waiting for approval</h2>
+                <p>A simulated payment request of <strong><%= rwf(order.total) %></strong> was "sent" to <strong><%= momoStep.maskedPhone %></strong>.</p>
+                <p class="muted">In real life you would approve it on your phone. Here, choose the result yourself. We never ask for your PIN.</p>
+                <form action="/orders/<%= order.id %>/pay/momo/confirm" method="post" class="button-row">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button type="submit" name="decision" value="approve" class="btn btn-large">I approved the payment</button>
+                    <button type="submit" name="decision" value="decline" class="btn btn-outline btn-large">Decline</button>
+                </form>
+            </div>
+        <% } %>
+    <% } else { %>
+        <form action="/orders/<%= order.id %>/pay/card" method="post" class="card" novalidate autocomplete="off">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <h2>Card payment</h2>
+            <p class="muted">Demo card: 4242 4242 4242 4242, any future date, any 3 digits.</p>
+            <%- include('partials/field', { name: 'cardName', label: 'Name on card', type: 'text', values, errors, attrs: 'required maxlength="60"' }) %>
+            <%- include('partials/field', { name: 'cardNumber', label: 'Card number', type: 'text', values, errors, attrs: 'required inputmode="numeric" maxlength="19" placeholder="4242 4242 4242 4242"' }) %>
+            <div class="field-row">
+                <%- include('partials/field', { name: 'expiry', label: 'Expiry (MM/YY)', type: 'text', values, errors, attrs: 'required maxlength="5" placeholder="12/29"' }) %>
+                <%- include('partials/field', { name: 'cvv', label: 'Security code', type: 'password', values, errors, attrs: 'required inputmode="numeric" maxlength="3"' }) %>
+            </div>
+            <button type="submit" class="btn btn-block btn-large">Pay <%= rwf(order.total) %> (simulated)</button>
+        </form>
+    <% } %>
+    <p class="center"><a href="/orders">Pay later from My Orders</a></p>
+</section>
+<%- include('partials/footer') %>

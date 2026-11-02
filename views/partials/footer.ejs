@@ -1,0 +1,53 @@
+</main>
+
+<footer class="site-footer">
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <a href="/" class="logo logo-light" aria-label="Woodora home">
+                <svg class="logo-icon" viewBox="0 0 40 40" aria-hidden="true">
+                    <circle cx="20" cy="20" r="19" fill="#c3a45d"/>
+                    <circle cx="20" cy="20" r="13" fill="none" stroke="#191919" stroke-width="2"/>
+                    <circle cx="20" cy="20" r="7" fill="none" stroke="#191919" stroke-width="2"/>
+                    <circle cx="20" cy="20" r="2" fill="#191919"/>
+                </svg>
+                <span>Woodora</span>
+            </a>
+            <p>Natural wooden essentials for a thoughtful kitchen.</p>
+            <p class="pay-methods"><span>Mobile Money</span><span>Card</span><span>Cash on Delivery</span></p>
+        </div>
+        <div>
+            <h3>Shop</h3>
+            <p><a href="/products">All products</a></p>
+            <p><a href="/cart">Shopping cart</a></p>
+            <p><a href="/mission">Our Mission</a></p>
+            <p><a href="/impact">Our Impact</a></p>
+        </div>
+        <div>
+            <h3>Account</h3>
+            <% if (currentUser) { %>
+                <p><a href="<%= currentUser.role === 'admin' ? '/admin' : '/orders' %>"><%= currentUser.role === 'admin' ? 'Admin dashboard' : 'My Orders' %></a></p>
+            <% } else { %>
+                <p><a href="/login/customer">Customer login</a></p>
+                <p><a href="/register">Create an account</a></p>
+                <p><a href="/admin/login">Admin login</a></p>
+            <% } %>
+            <p><a href="/contact">Contact us</a></p>
+        </div>
+        <div>
+            <h3>Contact us</h3>
+            <p><%- include('icon', { name: 'mail' }) %> <%= business.email %></p>
+            <p><%- include('icon', { name: 'phone' }) %> <%= business.phone %></p>
+            <p><%- include('icon', { name: 'pin' }) %> <%= business.address %></p>
+            <p><%= business.hours %></p>
+            <p class="placeholder-note">Contact details above are placeholders.</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2026 Woodora. All Rights Reserved.</p>
+        <p>University project &mdash; online payments are simulations. No real money is charged.</p>
+    </div>
+</footer>
+
+<script src="/js/main.js"></script>
+</body>
+</html>

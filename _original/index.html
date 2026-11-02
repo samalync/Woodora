@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Woodora - Home</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">Woodora</div>
+
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="impact.html">Impact</a>
+            <a href="products.html">product</a>
+            <a href="our-mission.html">Our Mission</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+
+            <p class="small-title">WOODEN KITCHEN · MINDFUL LIVING</p>
+
+            <h1>Bring Nature Into Your Kitchen.</h1>
+
+            <p>
+                Discover beautiful wooden kitchen essentials
+                that make everyday cooking feel more natural,
+                thoughtful and meaningful.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="#collection" class="btn">
+                    Explore Collection
+                </a>
+
+                <a href="impact.html" class="btn btn-outline">
+                    Our Impact
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="collection" id="collection">
+
+        <h2 class="section-title">
+            Simple Pieces. Natural Beauty.
+        </h2>
+
+        <p class="section-description">
+            Thoughtful wooden essentials for cooking,
+            serving and sharing.
+        </p>
+
+        <div class="products">
+
+            <div class="product-card">
+                <img src="images/images (1).jpeg" alt="Wooden kitchen utensils">
+
+                <div class="product-info">
+                    <h3>Wooden Utensils</h3>
+                    <p>Natural wooden tools for everyday cooking.</p>
+                    <p class="product-price">8,000 RWF</p>
+
+                    <button class="buy-button"
+                        onclick="selectProduct('Wooden Utensils', '8,000 RWF')">
+                        Buy Now
+                    </button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="images/images (2).jpeg" alt="Wooden bowl">
+
+                <div class="product-info">
+                    <h3>Wooden Bowls</h3>
+                    <p>Beautiful bowls for serving and sharing.</p>
+                    <p class="product-price">12,000 RWF</p>
+
+                    <button class="buy-button"
+                        onclick="selectProduct('Wooden Bowls', '12,000 RWF')">
+                        Buy Now
+                    </button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="images/images (4).jpeg" alt="Wooden tray">
+
+                <div class="product-info">
+                    <h3>Wooden Trays</h3>
+                    <p>Simple and elegant trays for your kitchen.</p>
+                    <p class="product-price">15,000 RWF</p>
+
+                    <button class="buy-button"
+                        onclick="selectProduct('Wooden Trays', '15,000 RWF')">
+                        Buy Now
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="payment-section" id="payment">
+
+        <h2>Ready to Make Your Choice?</h2>
+
+        <p id="selected-product">
+            Select a product to see your order details.
+        </p>
+
+        <button class="card-button" onclick="payByCard()">
+            Pay by Card
+        </button>
+
+        <p class="payment-note">
+            Secure card payment option.
+        </p>
+
+    </section>
+
+    <section class="impact">
+        <h2>Better Choices Begin With Everyday Moments.</h2>
+
+        <a href="impact.html" class="btn">
+            Discover Our Impact
+        </a>
+    </section>
+
+    <footer>
+        <h2>Woodora</h2>
+        <p>Natural wooden essentials for a thoughtful kitchen.</p>
+        <p>© 2026 Woodora. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        let currentProduct = "";
+
+        function selectProduct(name, price) {
+            currentProduct = name;
+
+            document.getElementById("selected-product").textContent =
+                "Selected: " + name + " | Price: " + price;
+
+            document.getElementById("payment").scrollIntoView({
+                behavior: "smooth"
+            });
+        }
+
+        function payByCard() {
+            if (currentProduct === "") {
+                alert("Please select a product first.");
+            } else {
+                alert("Card payment is a demo. A payment provider must be connected to process real payments.");
+            }
+        }
+    </script>
+
+</body>
+</html>

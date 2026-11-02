@@ -1,0 +1,56 @@
+<%- include('../partials/admin-top') %>
+<div class="admin-page-head">
+    <div>
+        <p class="breadcrumb"><a href="/admin/orders">Orders</a> <span>/</span> #<%= order.id %></p>
+        <h1>Order #<%= order.id %></h1>
+    </div>
+    <div><%- include('../partials/status-badges', { order: order }) %></div>
+</div>
+
+<div class="admin-two-col">
+    <div>
+        <section class="panel">
+            <h2>Items</h2>
+            <ul class="summary-list">
+                <% items.forEach(function (item) { %>
+                    <li><span><%= item.product_name %> <small class="muted">&times; <%= item.quantity %> (<%= rwf(item.unit_price) %> each)</small></span><strong><%= rwf(item.unit_price * item.quantity) %></strong></li>
+                <% }) %>
+            </ul>
+            <p class="row cart-total"><span>Total</span><strong><%= rwf(order.total) %></strong></p>
+        </section>
+
+        <section class="panel">
+            <h2>Update status</h2>
+            <form action="/admin/orders/<%= order.id %>/status" method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <div class="field-row">
+                    <div class="field">
+                        <label for="order_status">Order status</label>
+                        <select id="order_status" name="order_status">
+                            <% orderStatuses.forEach(function (s) { %><option <%= order.order_status === s ? 'selected' : '' %>><%= s %></option><% }) %>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="payment_status">Payment status</label>
+                        <select id="payment_status" name="payment_status">
+                            <% paymentStatuses.forEach(function (s) { %><option <%= order.payment_status === s ? 'selected' : '' %>><%= s %></option><% }) %>
+                        </select>
+                    </div>
+                </div>
+                <p class="muted">Tip: for Cash on Delivery, set the order to Delivered and the payment to Paid once the cash is collected.</p>
+                <button type="submit" class="btn btn-large">Save status</button>
+            </form>
+        </section>
+    </div>
+    <aside class="panel summary">
+        <h2>Customer</h2>
+        <p><strong><%= order.customer_name %></strong></p>
+        <p><%= order.address %>, <%= order.city %></p>
+        <p>Phone: <%= order.phone %></p>
+        <p>Email: <%= order.email %></p>
+        <p>Payment method: <strong><%= order.payment_method.toUpperCase() %></strong></p>
+        <p>Placed: <%= order.created_at %></p>
+        <p><a href="/admin/orders">&larr; All orders</a></p>
+    </aside>
+</div>
+<%- include('../partials/admin-bottom') %>

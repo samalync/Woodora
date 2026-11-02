@@ -1,0 +1,22 @@
+<%- include('../partials/admin-top') %>
+<div class="admin-page-head">
+    <div>
+        <h1>Customer messages</h1>
+        <p class="muted">Messages sent through the contact form.</p>
+    </div>
+</div>
+<% if (messages.length === 0) { %>
+    <section class="panel"><p class="muted panel-empty">No messages yet.</p></section>
+<% } else { %>
+    <% messages.forEach(function (m) { %>
+        <article class="panel message">
+            <div class="message-head">
+                <h3><%= m.subject %></h3>
+                <small class="muted"><%= m.created_at %></small>
+            </div>
+            <p class="muted"><%= m.name %> &lt;<a href="mailto:<%= m.email %>"><%= m.email %></a>&gt;</p>
+            <p class="pre-line"><%= m.message %></p>
+        </article>
+    <% }) %>
+<% } %>
+<%- include('../partials/admin-bottom') %>

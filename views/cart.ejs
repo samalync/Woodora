@@ -1,0 +1,78 @@
+<%- include('partials/header') %>
+
+<section class="page-hero compact">
+    <h1>Shopping Cart</h1>
+    <%- include('partials/checkout-steps', { step: 1 }) %>
+</section>
+
+<section class="section">
+<% if (cart.items.length === 0) { %>
+    <div class="empty-state">
+        <%- include('partials/icon', { name: 'cart' }) %>
+        <p>Your cart is empty.</p>
+        <a href="/products" class="btn">Browse products</a>
+    </div>
+<% } else { %>
+    <div class="cart-layout">
+        <div class="table-wrap">
+        <table class="table cart-table">
+            <thead>
+                <tr><th>Product</th><th>Price</th><th>Quantity</th><th>Subtotal</th><th><span class="sr-only">Remove</span></th></tr>
+            </thead>
+            <tbody>
+            <% cart.items.forEach(function (item) { %>
+                <tr>
+                    <td data-label="Product">
+                        <div class="cart-product">
+                            <img src="/images/<%= item.image %>" alt="">
+                            <a href="/products/<%= item.id %>"><%= item.name %></a>
+                        </div>
+                    </td>
+                    <td data-label="Price"><%= rwf(item.price) %></td>
+                    <td data-label="Quantity">
+                        <div class="qty-wrap">
+                            <div class="qty-control">
+                                <form action="/cart/update" method="post">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    <input type="hidden" name="productId" value="<%= item.id %>">
+                                    <input type="hidden" name="quantity" value="<%= item.quantity - 1 %>">
+                                    <button type="submit" aria-label="Decrease quantity of <%= item.name %>">&minus;</button>
+                                </form>
+                                <span class="qty-number" aria-label="Quantity"><%= item.quantity %></span>
+                                <form action="/cart/update" method="post">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    <input type="hidden" name="productId" value="<%= item.id %>">
+                                    <input type="hidden" name="quantity" value="<%= item.quantity + 1 %>">
+                                    <button type="submit" aria-label="Increase quantity of <%= item.name %>" <%= item.quantity >= Math.min(item.stock, maxPerItem) ? 'disabled' : '' %>>+</button>
+                                </form>
+                            </div>
+                            <% if (item.quantity >= item.stock) { %><small class="muted">Maximum available</small><% } %>
+                        </div>
+                    </td>
+                    <td data-label="Subtotal"><strong><%= rwf(item.lineTotal) %></strong></td>
+                    <td class="actions">
+                        <form action="/cart/remove" method="post">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <input type="hidden" name="productId" value="<%= item.id %>">
+                            <button type="submit" class="btn btn-ghost-danger btn-small"><%- include('partials/icon', { name: 'trash' }) %> Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            <% }) %>
+            </tbody>
+        </table>
+        </div>
+
+        <aside class="cart-summary card">
+            <h2>Order total</h2>
+            <p class="row"><span>Subtotal</span><strong><%= rwf(cart.total) %></strong></p>
+            <p class="row muted"><span>Delivery fee</span><span>Free (demo)</span></p>
+            <p class="row cart-total"><span>Total</span><strong><%= rwf(cart.total) %></strong></p>
+            <a href="/checkout" class="btn btn-block btn-large">Proceed to Checkout</a>
+            <a href="/products" class="btn btn-outline btn-block">Continue shopping</a>
+        </aside>
+    </div>
+<% } %>
+</section>
+
+<%- include('partials/footer') %>
