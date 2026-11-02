@@ -11,16 +11,16 @@ function backTo(req, fallback) {
     return target.startsWith('/') && !target.startsWith('//') ? target : fallback;
 }
 
-router.get('/', (req, res) => {
-    const cart = getCartDetails(req.session);
+router.get('/', async (req, res) => {
+    const cart = await getCartDetails(req.session);
     if (cart.notices.length > 0) res.locals.flash = { type: 'error', text: cart.notices.join(' ') };
     res.render('cart', { title: 'Shopping Cart', cart, maxPerItem: MAX_PER_ITEM });
 });
 
-router.post('/add', (req, res) => {
+router.post('/add', async (req, res) => {
     const productId = Number(req.body.productId);
     const quantity = Math.floor(Number(req.body.quantity) || 1);
-    const product = db.prepare('SELECT id, name, stock FROM products WHERE id = ?').get(productId);
+    const product = await db.get('SELECT id, name, stock FROM products WHERE id = ?', productId);
     const back = backTo(req, '/products');
 
     if (!product || quantity < 1) {
@@ -44,10 +44,10 @@ router.post('/add', (req, res) => {
 });
 
 // Set the quantity to an exact number (used by the + / - buttons).
-router.post('/update', (req, res) => {
+router.post('/update', async (req, res) => {
     const productId = Number(req.body.productId);
     const quantity = Math.floor(Number(req.body.quantity));
-    const product = db.prepare('SELECT name, stock FROM products WHERE id = ?').get(productId);
+    const product = await db.get('SELECT name, stock FROM products WHERE id = ?', productId);
     req.session.cart = req.session.cart || {};
 
     if (!product || !(productId in req.session.cart) || !Number.isFinite(quantity)) {

@@ -3,20 +3,20 @@ const express = require('express');
 const db = require('../db/database');
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
     // Featured products come from the same products table as the catalogue.
-    const featured = db.prepare(
+    const featured = await db.all(
         `SELECT p.*, c.name AS category FROM products p
          JOIN categories c ON c.id = p.category_id
          WHERE p.featured = 1 ORDER BY p.id LIMIT 3`
-    ).all();
+    );
     // Category tiles: name, number of products and a picture taken from the category's first product.
-    const categories = db.prepare(
+    const categories = await db.all(
         `SELECT c.id, c.name, COUNT(p.id) AS count,
                 (SELECT image FROM products WHERE category_id = c.id ORDER BY id LIMIT 1) AS image
          FROM categories c LEFT JOIN products p ON p.category_id = c.id
          GROUP BY c.id ORDER BY c.id`
-    ).all();
+    );
     res.render('home', { title: 'Home', featured, categories });
 });
 
@@ -31,7 +31,7 @@ router.get('/contact', (req, res) => {
         values: { name: user ? user.name : '', email: user ? user.email : '', subject: '', message: '' } });
 });
 
-router.post('/contact', (req, res) => {
+router.post('/contact', async (req, res) => {
     const values = {
         name: String(req.body.name || '').trim(),
         email: String(req.body.email || '').trim(),
@@ -47,8 +47,8 @@ router.post('/contact', (req, res) => {
     if (Object.keys(errors).length > 0) {
         return res.status(400).render('contact', { title: 'Contact Us', errors, values });
     }
-    db.prepare('INSERT INTO messages (name, email, subject, message) VALUES (?, ?, ?, ?)')
-        .run(values.name, values.email, values.subject, values.message);
+    await db.run('INSERT INTO messages (name, email, subject, message) VALUES (?, ?, ?, ?)',
+        values.name, values.email, values.subject, values.message);
     req.session.flash = { type: 'success', text: 'Thank you! Your message was sent. We will reply by email.' };
     res.redirect('/contact');
 });

@@ -3,7 +3,7 @@ const express = require('express');
 const db = require('../db/database');
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
     const search = String(req.query.q || '').trim().slice(0, 60);
     const categoryId = Number(req.query.category) || 0;
 
@@ -21,16 +21,17 @@ router.get('/', (req, res) => {
     }
     sql += ' ORDER BY p.id';
 
-    const products = db.prepare(sql).all(...params);
-    const categories = db.prepare('SELECT * FROM categories ORDER BY id').all();
+    const products = await db.all(sql, ...params);
+    const categories = await db.all('SELECT * FROM categories ORDER BY id');
     res.render('products', { title: 'Products', products, categories, search, categoryId });
 });
 
-router.get('/:id', (req, res, next) => {
-    const product = db.prepare(
+router.get('/:id', async (req, res, next) => {
+    const product = await db.get(
         `SELECT p.*, c.name AS category FROM products p
-         JOIN categories c ON c.id = p.category_id WHERE p.id = ?`
-    ).get(Number(req.params.id));
+         JOIN categories c ON c.id = p.category_id WHERE p.id = ?`,
+        Number(req.params.id)
+    );
     if (!product) return next(); // goes to the 404 page
     res.render('product', { title: product.name, product });
 });

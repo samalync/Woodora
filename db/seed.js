@@ -1,6 +1,7 @@
 // Creates the tables and fills them with starting data.
-// Run with:  npm run setup
-// Safe to run again: it never deletes existing products, orders or users.
+//   - Run by hand with:  npm run setup
+//   - Also runs by itself the first time the website starts (see db/database.js).
+// Safe to run again: it never deletes or duplicates existing products, orders or users.
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
@@ -8,15 +9,8 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const db = require('./database');
 
-// 1. Create tables
-db.exec(fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8'));
-
-// 2. Categories
 const categories = ['Utensils', 'Bowls & Plates', 'Trays & Boards', 'Sets'];
-const addCategory = db.prepare('INSERT OR IGNORE INTO categories (name) VALUES (?)');
-categories.forEach((name) => addCategory.run(name));
 
-// 3. Products (only added when the products table is empty)
 const products = [
     // name, description, price (RWF), stock, image, category, featured
     ['Wooden Utensil Holder', 'A sturdy wooden holder that keeps your spoons and spatulas within easy reach.', 8000, 25, 'utensil-holder.jpeg', 'Utensils', 1],
@@ -34,38 +28,58 @@ const products = [
     ['Wooden Knife Holder', 'A safe and stylish block that keeps your knives organised.', 18000, 14, 'knife-holder.jpeg', 'Utensils', 0],
 ];
 
-const productCount = db.prepare('SELECT COUNT(*) AS n FROM products').get().n;
-if (productCount === 0) {
-    const findCategory = db.prepare('SELECT id FROM categories WHERE name = ?');
-    const addProduct = db.prepare(
-        `INSERT INTO products (name, description, price, stock, image, category_id, featured)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`
-    );
-    products.forEach(([name, description, price, stock, image, category, featured]) => {
-        addProduct.run(name, description, price, stock, image, findCategory.get(category).id, featured);
+async function setupDatabase({ allowGeneratedPassword }) {
+    // 1. Create tables (IF NOT EXISTS, so existing data is kept)
+    await db.exec(fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8'));
+
+    // 2. Categories
+    for (const name of categories) await db.run('INSERT OR IGNORE INTO categories (name) VALUES (?)', name);
+
+    // 3. Products - only when the table is empty, so products deleted by the admin never come back.
+    //    The check and the inserts happen in one transaction, so two servers starting together cannot both add them.
+    const added = await db.transaction(async (tx) => {
+        const { n } = await tx.get('SELECT COUNT(*) AS n FROM products');
+        if (n > 0) return 0;
+        for (const [name, description, price, stock, image, category, featured] of products) {
+            const { id } = await tx.get('SELECT id FROM categories WHERE name = ?', category);
+            await tx.run(
+                `INSERT INTO products (name, description, price, stock, image, category_id, featured)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                name, description, price, stock, image, id, featured
+            );
+        }
+        return products.length;
     });
-    console.log(`Added ${products.length} products.`);
-}
+    if (added) console.log(`Added ${added} products.`);
 
-// 4. Administrator account. Credentials come from the .env file (see .env.example).
-const adminEmail = (process.env.ADMIN_EMAIL || 'admin@woodora.example').toLowerCase();
-const existingAdmin = db.prepare('SELECT id FROM users WHERE email = ?').get(adminEmail);
-
-if (!existingAdmin) {
-    let adminPassword = process.env.ADMIN_PASSWORD;
-    let generated = false;
-    if (!adminPassword) {
-        // No password configured: create a random one and show it once.
-        adminPassword = crypto.randomBytes(9).toString('base64url');
-        generated = true;
+    // 4. Administrator account. Credentials come from environment variables (.env file or the Vercel settings).
+    const adminEmail = (process.env.ADMIN_EMAIL || 'admin@woodora.example').toLowerCase();
+    const existingAdmin = await db.get('SELECT id FROM users WHERE email = ?', adminEmail);
+    if (!existingAdmin) {
+        let adminPassword = process.env.ADMIN_PASSWORD;
+        let generated = false;
+        if (!adminPassword && allowGeneratedPassword) {
+            // Running "npm run setup" by hand without a password: create a random one and show it once.
+            adminPassword = crypto.randomBytes(9).toString('base64url');
+            generated = true;
+        }
+        if (adminPassword) {
+            const hash = bcrypt.hashSync(adminPassword, 10);
+            await db.run('INSERT OR IGNORE INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)',
+                'Woodora Admin', adminEmail, hash, 'admin');
+            console.log(`Administrator created: ${adminEmail}`);
+            if (generated) console.log(`Generated password (save it now, it is not stored): ${adminPassword}`);
+        } else {
+            console.warn('WARNING: no administrator created. Set ADMIN_EMAIL and ADMIN_PASSWORD, then restart.');
+        }
     }
-    const hash = bcrypt.hashSync(adminPassword, 10);
-    db.prepare("INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, 'admin')")
-        .run('Woodora Admin', adminEmail, hash);
-    console.log(`Administrator created: ${adminEmail}`);
-    if (generated) console.log(`Generated password (save it now, it is not stored): ${adminPassword}`);
-} else {
-    console.log(`Administrator ${adminEmail} already exists - left unchanged.`);
 }
 
-console.log('Database ready: db/woodora.db');
+module.exports = { setupDatabase };
+
+// "npm run setup" runs this file directly.
+if (require.main === module) {
+    setupDatabase({ allowGeneratedPassword: true })
+        .then(() => console.log(`Database ready: ${db.storage}`))
+        .catch((err) => { console.error('Setup failed:', err.message); process.exit(1); });
+}

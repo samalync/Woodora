@@ -12,22 +12,22 @@ const router = express.Router();
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Check email + password. Returns the user row, or null if they are wrong.
-function authenticate(email, password) {
-    const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+async function authenticate(email, password) {
+    const user = await db.get('SELECT * FROM users WHERE email = ?', email);
     if (!user || !bcrypt.compareSync(password, user.password_hash)) return null;
     return user;
 }
 
-// Start a fresh session after login (prevents session fixation) but keep the guest's cart.
+// Start a brand new session after login (the old one is thrown away) but keep the guest's cart.
+// The session lives in a signed cookie, so the role stored here cannot be edited by the user.
 function logUserIn(req, res, user, redirectTo) {
     const guestCart = req.session.cart || {};
-    req.session.regenerate((err) => {
-        if (err) throw err;
-        req.session.user = { id: user.id, name: user.name, email: user.email, role: user.role };
-        req.session.cart = guestCart;
-        req.session.flash = { type: 'success', text: `Welcome, ${user.name}!` };
-        res.redirect(redirectTo);
-    });
+    req.session = {
+        user: { id: user.id, name: user.name, email: user.email, role: user.role },
+        cart: guestCart,
+        flash: { type: 'success', text: `Welcome, ${user.name}!` },
+    };
+    res.redirect(redirectTo);
 }
 
 // If somebody is already logged in, send them to the right place instead of a login form.
@@ -52,13 +52,13 @@ router.get('/login/customer', (req, res) => {
     res.render('login-customer', { title: 'Customer login', error: null, email: '', next: safeNext(req.query.next) });
 });
 
-router.post('/login/customer', (req, res) => {
+router.post('/login/customer', async (req, res) => {
     const email = String(req.body.email || '').trim().toLowerCase();
     const password = String(req.body.password || '');
     const next = safeNext(req.body.next);
     const fail = (status, error) => res.status(status).render('login-customer', { title: 'Customer login', error, email, next });
 
-    const user = authenticate(email, password);
+    const user = await authenticate(email, password);
     // Same message for "no such user" and "wrong password" so attackers learn nothing.
     if (!user) return fail(401, 'Incorrect email or password.');
     if (user.role !== 'customer') {
@@ -73,13 +73,13 @@ router.get('/admin/login', (req, res) => {
     res.render('login-admin', { title: 'Admin login', error: null, email: '', next: safeAdminNext(req.query.next) });
 });
 
-router.post('/admin/login', (req, res) => {
+router.post('/admin/login', async (req, res) => {
     const email = String(req.body.email || '').trim().toLowerCase();
     const password = String(req.body.password || '');
     const next = safeAdminNext(req.body.next);
     const fail = (status, error) => res.status(status).render('login-admin', { title: 'Admin login', error, email, next });
 
-    const user = authenticate(email, password);
+    const user = await authenticate(email, password);
     if (!user) return fail(401, 'Incorrect email or password.');
     // A valid customer account is NOT allowed through the admin door.
     if (user.role !== 'admin') {
@@ -94,7 +94,7 @@ router.get('/register', (req, res) => {
     res.render('register', { title: 'Create account', errors: {}, values: {} });
 });
 
-router.post('/register', (req, res) => {
+router.post('/register', async (req, res) => {
     const values = {
         name: String(req.body.name || '').trim(),
         email: String(req.body.email || '').trim().toLowerCase(),
@@ -109,7 +109,7 @@ router.post('/register', (req, res) => {
         errors.password = 'Password must be at least 8 characters and include a letter and a number.';
     }
     if (password !== confirm) errors.confirm = 'The two passwords do not match.';
-    if (!errors.email && db.prepare('SELECT id FROM users WHERE email = ?').get(values.email)) {
+    if (!errors.email && await db.get('SELECT id FROM users WHERE email = ?', values.email)) {
         errors.email = 'An account with this email already exists. Try logging in.';
     }
 
@@ -118,14 +118,15 @@ router.post('/register', (req, res) => {
     }
     // The role is ALWAYS 'customer' here. Anything sent in the form (e.g. role=admin) is ignored.
     const hash = bcrypt.hashSync(password, 10);
-    const result = db.prepare("INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, 'customer')")
-        .run(values.name, values.email, hash);
+    const result = await db.run("INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, 'customer')",
+        values.name, values.email, hash);
     logUserIn(req, res, { id: result.lastInsertRowid, name: values.name, email: values.email, role: 'customer' }, '/products');
 });
 
 // ----- Logout (a POST form, so other websites cannot log you out) -----
 router.post('/logout', (req, res) => {
-    req.session.destroy(() => res.redirect('/'));
+    req.session = null; // removes the session cookie
+    res.redirect('/');
 });
 
 module.exports = router;

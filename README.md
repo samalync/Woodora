@@ -16,4 +16,14 @@ npm start                # http://localhost:3000
 - Customers register at `/register`.
 - Online payments are **simulations**; no real money is charged.
 
+## Deploy to Vercel
+
+1. Create a free database at [turso.tech](https://turso.tech) and copy its URL (`libsql://...`) and an auth token.
+2. In the Vercel project, open **Settings → Environment Variables** and add:
+   `SESSION_SECRET` (a long random text), `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`.
+3. Redeploy. The first visit creates the tables, the 13 products and the admin account automatically.
+
+Without the two `TURSO_*` variables the site still opens, but in **demo mode**: the data lives in a temporary
+file and is lost whenever Vercel restarts the function. Vercel's own page shows the real error in **Logs** if something is wrong.
+
 More detail: `PROJECT_GUIDE.md`, `TESTING_CHECKLIST.md` and the Arabic guides (`WOODORA_ARABIC_*.md`).

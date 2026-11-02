@@ -20,14 +20,17 @@ const METHODS = {
 };
 const PHONE_PATTERN = /^(\+?250|0)?7[2389]\d{7}$/; // Rwandan mobile numbers
 
+// A normal "cannot buy this" situation (safe to show to the customer), not a program error.
+class StockError extends Error {}
+
 // Load an order only if it belongs to the logged-in customer.
 function findMyOrder(req, orderId) {
-    return db.prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?').get(Number(orderId), req.session.user.id);
+    return db.get('SELECT * FROM orders WHERE id = ? AND user_id = ?', Number(orderId), req.session.user.id);
 }
 
 // ---------- Checkout ----------
-router.get('/checkout', (req, res) => {
-    const cart = getCartDetails(req.session);
+router.get('/checkout', async (req, res) => {
+    const cart = await getCartDetails(req.session);
     if (cart.items.length === 0) {
         req.session.flash = { type: 'error', text: 'Your cart is empty. Add some products first.' };
         return res.redirect('/products');
@@ -41,7 +44,7 @@ router.get('/checkout', (req, res) => {
         values: { name: user.name, email: user.email, phone: '', address: '', city: '', method: 'momo' } });
 });
 
-router.post('/checkout', (req, res) => {
+router.post('/checkout', async (req, res) => {
     const values = {
         name: String(req.body.name || '').trim(),
         email: String(req.body.email || '').trim(),
@@ -58,7 +61,7 @@ router.post('/checkout', (req, res) => {
     if (values.city.length < 2 || values.city.length > 60) errors.city = 'Please enter your city or district.';
     if (!METHODS[values.method]) errors.method = 'Please choose a payment method.';
 
-    const cart = getCartDetails(req.session);
+    const cart = await getCartDetails(req.session);
     if (cart.items.length === 0) {
         req.session.flash = { type: 'error', text: 'Your cart is empty.' };
         return res.redirect('/products');
@@ -68,34 +71,37 @@ router.post('/checkout', (req, res) => {
     }
 
     // Create the order inside ONE database transaction: either everything is saved, or nothing.
-    const placeOrder = db.transaction(() => {
-        let total = 0;
-        const lines = [];
-        for (const item of cart.items) {
-            // Read the price again from the database (never from the browser).
-            const product = db.prepare('SELECT id, name, price FROM products WHERE id = ?').get(item.id);
-            // Take the stock; this only succeeds if enough stock is still available.
-            const taken = db.prepare('UPDATE products SET stock = stock - ? WHERE id = ? AND stock >= ?')
-                .run(item.quantity, item.id, item.quantity);
-            if (taken.changes !== 1) throw new Error(`Not enough stock for "${item.name}".`);
-            total += product.price * item.quantity;
-            lines.push({ product, quantity: item.quantity });
-        }
-        const order = db.prepare(
-            `INSERT INTO orders (user_id, customer_name, email, phone, address, city, total, payment_method)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-        ).run(req.session.user.id, values.name, values.email, values.phone, values.address, values.city, total, values.method);
-        const addLine = db.prepare(
-            'INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity) VALUES (?, ?, ?, ?, ?)'
-        );
-        lines.forEach((l) => addLine.run(order.lastInsertRowid, l.product.id, l.product.name, l.product.price, l.quantity));
-        return order.lastInsertRowid;
-    });
-
     let orderId;
     try {
-        orderId = placeOrder();
+        orderId = await db.transaction(async (tx) => {
+            let total = 0;
+            const lines = [];
+            for (const item of cart.items) {
+                // Read the price again from the database (never from the browser).
+                const product = await tx.get('SELECT id, name, price FROM products WHERE id = ?', item.id);
+                if (!product) throw new StockError(`"${item.name}" is no longer available.`);
+                // Take the stock; this only succeeds if enough stock is still available.
+                const taken = await tx.run('UPDATE products SET stock = stock - ? WHERE id = ? AND stock >= ?',
+                    item.quantity, item.id, item.quantity);
+                if (taken.changes !== 1) throw new StockError(`Not enough stock for "${item.name}".`);
+                total += product.price * item.quantity;
+                lines.push({ product, quantity: item.quantity });
+            }
+            const order = await tx.run(
+                `INSERT INTO orders (user_id, customer_name, email, phone, address, city, total, payment_method)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                req.session.user.id, values.name, values.email, values.phone, values.address, values.city, total, values.method
+            );
+            for (const l of lines) {
+                await tx.run(
+                    'INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity) VALUES (?, ?, ?, ?, ?)',
+                    order.lastInsertRowid, l.product.id, l.product.name, l.product.price, l.quantity
+                );
+            }
+            return order.lastInsertRowid;
+        });
     } catch (err) {
+        if (!(err instanceof StockError)) throw err; // real errors go to the error page
         req.session.flash = { type: 'error', text: err.message + ' Please review your cart.' };
         return res.redirect('/cart');
     }
@@ -111,20 +117,20 @@ router.post('/checkout', (req, res) => {
 // ---------- Simulated payment ----------
 // Marks the order as paid. The "AND payment_status = 'Unpaid'" stops it being paid twice.
 function markPaid(orderId) {
-    db.prepare("UPDATE orders SET payment_status = 'Paid', order_status = 'Paid' WHERE id = ? AND payment_status = 'Unpaid'")
-        .run(orderId);
+    return db.run("UPDATE orders SET payment_status = 'Paid', order_status = 'Paid' WHERE id = ? AND payment_status = 'Unpaid'",
+        orderId);
 }
 
 // Find an order that can still be paid online, or redirect with a message.
-function findPayableOrder(req, res) {
-    const order = findMyOrder(req, req.params.id);
+async function findPayableOrder(req, res) {
+    const order = await findMyOrder(req, req.params.id);
     if (!order) { res.status(404).render('error', { title: 'Order not found', heading: 'Order not found', message: 'We could not find that order.' }); return null; }
     if (order.payment_status === 'Paid' || order.payment_method === 'cod') { res.redirect(`/orders/${order.id}`); return null; }
     return order;
 }
 
-router.get('/orders/:id/pay', (req, res) => {
-    const order = findPayableOrder(req, res);
+router.get('/orders/:id/pay', async (req, res) => {
+    const order = await findPayableOrder(req, res);
     if (!order) return;
     const pending = req.session.momoPending;
     // Mobile Money step 2 is shown only after a phone number was submitted for THIS order.
@@ -133,8 +139,8 @@ router.get('/orders/:id/pay', (req, res) => {
 });
 
 // Mobile Money step 1: customer enters a phone number. We never ask for a PIN.
-router.post('/orders/:id/pay/momo', (req, res) => {
-    const order = findPayableOrder(req, res);
+router.post('/orders/:id/pay/momo', async (req, res) => {
+    const order = await findPayableOrder(req, res);
     if (!order || order.payment_method !== 'momo') return;
     const phone = String(req.body.momoPhone || '').replace(/\s+/g, '');
     if (!PHONE_PATTERN.test(phone)) {
@@ -146,15 +152,15 @@ router.post('/orders/:id/pay/momo', (req, res) => {
 });
 
 // Mobile Money step 2: simulates the customer approving (or declining) on their phone.
-router.post('/orders/:id/pay/momo/confirm', (req, res) => {
-    const order = findPayableOrder(req, res);
+router.post('/orders/:id/pay/momo/confirm', async (req, res) => {
+    const order = await findPayableOrder(req, res);
     if (!order || order.payment_method !== 'momo') return;
     const pending = req.session.momoPending;
     if (!pending || pending.orderId !== order.id) return res.redirect(`/orders/${order.id}/pay`);
     delete req.session.momoPending;
 
     if (req.body.decision === 'approve') {
-        markPaid(order.id);
+        await markPaid(order.id);
         req.session.flash = { type: 'success', text: 'Simulated Mobile Money payment approved. Thank you!' };
         return res.redirect(`/orders/${order.id}`);
     }
@@ -163,8 +169,8 @@ router.post('/orders/:id/pay/momo/confirm', (req, res) => {
 });
 
 // Card payment: we only validate the format. Card details are NEVER stored or logged.
-router.post('/orders/:id/pay/card', (req, res) => {
-    const order = findPayableOrder(req, res);
+router.post('/orders/:id/pay/card', async (req, res) => {
+    const order = await findPayableOrder(req, res);
     if (!order || order.payment_method !== 'card') return;
     const cardName = String(req.body.cardName || '').trim();
     const cardNumber = String(req.body.cardNumber || '').replace(/[\s-]/g, '');
@@ -190,21 +196,21 @@ router.post('/orders/:id/pay/card', (req, res) => {
         return res.status(400).render('pay', { title: 'Payment', order, momoStep: null, methodName: METHODS.card,
             errors, values: { cardName, expiry } });
     }
-    markPaid(order.id); // card details are discarded here
+    await markPaid(order.id); // card details are discarded here
     req.session.flash = { type: 'success', text: 'Simulated card payment successful. Thank you!' };
     res.redirect(`/orders/${order.id}`);
 });
 
 // ---------- Order history ----------
-router.get('/orders', (req, res) => {
-    const orders = db.prepare('SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC').all(req.session.user.id);
+router.get('/orders', async (req, res) => {
+    const orders = await db.all('SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC', req.session.user.id);
     res.render('orders', { title: 'My Orders', orders, methods: METHODS });
 });
 
-router.get('/orders/:id', (req, res, next) => {
-    const order = findMyOrder(req, req.params.id);
+router.get('/orders/:id', async (req, res, next) => {
+    const order = await findMyOrder(req, req.params.id);
     if (!order) return next();
-    const items = db.prepare('SELECT * FROM order_items WHERE order_id = ?').all(order.id);
+    const items = await db.all('SELECT * FROM order_items WHERE order_id = ?', order.id);
     res.render('order', { title: `Order #${order.id}`, order, items, methodName: METHODS[order.payment_method] });
 });
 

@@ -14,8 +14,8 @@ HTML template and every action is a small, commented route.
 |---|---|
 | Node.js + Express | The web server. It receives requests and sends back pages. |
 | EJS | Templates: HTML with small gaps filled in by data from the server. |
-| SQLite (`better-sqlite3`) | The database. One file (`db/woodora.db`), no database server to install. |
-| `express-session` | Remembers who is logged in and what is in the cart. |
+| SQLite (`@libsql/client`) | The database. On your computer it is one file (`db/woodora.db`); on Vercel it is a hosted SQLite database (Turso). |
+| `cookie-session` | Remembers who is logged in and what is in the cart, in a signed cookie (works on Vercel). |
 | `bcryptjs` | Hashes passwords so the real password is never stored. |
 | `dotenv` | Reads private settings (admin password, session secret) from the `.env` file. |
 | HTML, CSS, a little JavaScript | The interface. JavaScript only opens the mobile menu and asks "Are you sure?" before deleting. |
@@ -24,7 +24,10 @@ HTML template and every action is a small, commented route.
 
 ```
 WOOdora/
-├── server.js            Starts the website; sessions, security checks, shared values
+├── app.js               Builds the website: sessions, security checks, shared values
+├── server.js            Starts the website on your computer (npm start)
+├── api/index.js         Starts the same website on Vercel
+├── vercel.json          Tells Vercel how to run the website
 ├── package.json         List of libraries and the commands "npm run setup" / "npm start"
 ├── .env.example         Template for the private settings file (.env)
 ├── db/
@@ -168,7 +171,7 @@ Why two separate statuses? An order can be *Pending* and *Unpaid* (new), *Paid* 
 ## 11. Code files to understand before the demonstration
 
 1. `db/schema.sql` - the whole data model in one page.
-2. `server.js` - how the app starts, sessions and the security checks that run on every request.
+2. `app.js` - how the app is built: sessions and the security checks that run on every request (`server.js` only starts it).
 3. `helpers/cart.js` - why the browser can never fake a price.
 4. `routes/checkout.js` - the heart of the shop: validation, the transaction, payment simulation.
 5. `routes/admin.js` - product and order management, protected by `requireAdmin`.
@@ -178,8 +181,12 @@ Why two separate statuses? An order can be *Pending* and *Unpaid* (new), *Paid* 
 
 ## Changing the placeholder contact details
 
-The email, phone, address and opening hours in the footer and contact page are **placeholders**. Replace them in one place: the `res.locals.business` block in `server.js`.
+The email, phone, address and opening hours in the footer and contact page are **placeholders**. Replace them in one place: the `res.locals.business` block in `app.js`.
 
 To use a new product picture, copy it into `public/images/`, then pick it from the Image list when adding or editing a product.
 
-Known limits (fine for a demonstration): carts and logins are kept in memory, so restarting the server logs everyone out and empties carts. Orders and products are in the database and are kept.
+Known limits (fine for a demonstration): logins and carts live in a signed cookie, so signing out only removes the cookie from that browser (a copied cookie would stay valid until it expires after 8 hours). On Vercel without the Turso settings the site runs in demo mode and its data is lost when the function restarts.
+
+## Deploying to Vercel
+
+See the "Deploy to Vercel" section of `README.md`. In short: create a Turso database, add `SESSION_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` in the Vercel project settings, and redeploy. The tables, products and admin account are created on the first visit.
