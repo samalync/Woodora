@@ -17,6 +17,19 @@ const onVercel = Boolean(process.env.VERCEL);
 // A problem with the settings (not with the code). The message is safe to show.
 class ConfigError extends Error {}
 
+// Which settings does the server see? Shows only NAMES and yes/no (never values), to help fix a missing or
+// misspelled setting in the Vercel dashboard.
+function settingsReport() {
+    const wanted = ['SESSION_SECRET', 'ADMIN_EMAIL', 'ADMIN_PASSWORD', 'TURSO_DATABASE_URL', 'TURSO_AUTH_TOKEN'];
+    const seen = wanted.map((name) => `${name}: ${process.env[name] ? 'found' : 'MISSING'}`).join(', ');
+    // Variables that look similar but are not exact matches (a typo, an extra space...).
+    const similar = Object.keys(process.env)
+        .filter((name) => /session|secret|turso|admin/i.test(name) && !wanted.includes(name))
+        .map((name) => JSON.stringify(name));
+    return ` [Environment: ${process.env.VERCEL_ENV || 'unknown'}. ${seen}.` +
+        (similar.length ? ` Similar names that do not match exactly: ${similar.join(', ')}.` : '') + ']';
+}
+
 // Login sessions are stored in a signed cookie, so they work on any server instance
 // (Vercel may run each request on a different one). The secret signs the cookie so it cannot be edited.
 let sessionSecret = process.env.SESSION_SECRET;
@@ -61,7 +74,7 @@ app.use((req, res, next) => {
 
 // On Vercel the secret MUST come from the project settings: a random one would differ on every instance.
 if (!sessionSecret) {
-    app.use((req, res, next) => next(new ConfigError('Server setting missing: add SESSION_SECRET in the Vercel project settings (Environment Variables) and redeploy.')));
+    app.use((req, res, next) => next(new ConfigError('Server setting missing: add SESSION_SECRET in the Vercel project settings (Environment Variables) for the Production environment, then redeploy.' + settingsReport())));
 }
 
 // Make sure the database tables exist (creates them the first time).
@@ -71,7 +84,7 @@ app.use(async (req, res, next) => {
         next();
     } catch (err) {
         console.error('Database setup failed:', err);
-        next(new ConfigError('The database could not be reached or set up. Check TURSO_DATABASE_URL and TURSO_AUTH_TOKEN in the Vercel project settings (and ADMIN_EMAIL / ADMIN_PASSWORD), then redeploy. Details are in the Vercel function logs.'));
+        next(new ConfigError('The database could not be reached or set up. Check TURSO_DATABASE_URL and TURSO_AUTH_TOKEN in the Vercel project settings (and ADMIN_EMAIL / ADMIN_PASSWORD), then redeploy. Details are in the Vercel function logs.' + settingsReport()));
     }
 });
 
