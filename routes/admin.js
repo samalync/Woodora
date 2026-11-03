@@ -9,6 +9,13 @@ const router = express.Router();
 
 router.use(requireAdmin);
 
+// The notification bell (in the top bar of every admin page) shows how many notifications are unread.
+router.use(async (req, res, next) => {
+    if (req.path.startsWith('/api/')) return next();
+    res.locals.unreadNotifications = (await db.get('SELECT COUNT(*) AS n FROM admin_notifications WHERE is_read = 0')).n;
+    next();
+});
+
 const ORDER_STATUSES = ['Pending', 'Paid', 'Delivered'];
 const PAYMENT_STATUSES = ['Unpaid', 'Paid'];
 
@@ -149,6 +156,78 @@ router.post('/orders/:id/status', async (req, res, next) => {
 router.get('/messages', async (req, res) => {
     const messages = await db.all('SELECT * FROM messages ORDER BY id DESC');
     res.render('admin/messages', { title: 'Customer Messages', messages });
+});
+
+// ---------- Website visitors and notifications ----------
+// Times are stored in UTC and shown in Rwanda time (Africa/Kigali, UTC+2, no daylight saving).
+const KIGALI_OFFSET_HOURS = 2;
+const kigaliFormat = new Intl.DateTimeFormat('en-GB', { timeZone: 'Africa/Kigali', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+const utcDate = (text) => new Date(text.replace(' ', 'T') + 'Z');
+const toIso = (text) => utcDate(text).toISOString();
+
+// UTC text ("2026-11-03 10:15:00") of the moment today started in Rwanda.
+function startOfTodayUtc() {
+    const shifted = new Date(Date.now() + KIGALI_OFFSET_HOURS * 3600 * 1000);
+    shifted.setUTCHours(0, 0, 0, 0);
+    return new Date(shifted.getTime() - KIGALI_OFFSET_HOURS * 3600 * 1000).toISOString().slice(0, 19).replace('T', ' ');
+}
+
+const PAGE_NAMES = { '/': 'Home', '/products': 'All products', '/mission': 'Our Mission', '/impact': 'Our Impact', '/contact': 'Contact us', '/privacy': 'Privacy & Cookies' };
+
+// The bell: the latest notifications and how many are unread.
+async function notificationPayload() {
+    const unread = (await db.get('SELECT COUNT(*) AS n FROM admin_notifications WHERE is_read = 0')).n;
+    const rows = await db.all(
+        `SELECT n.id, n.message, n.is_read, n.created_at, v.path
+         FROM admin_notifications n LEFT JOIN visits v ON v.id = n.visit_id
+         ORDER BY n.id DESC LIMIT 15`);
+    return {
+        unread,
+        notifications: rows.map((n) => ({ id: n.id, message: n.message, isRead: n.is_read === 1, createdAt: toIso(n.created_at), page: n.path || null })),
+    };
+}
+
+// Answers are never cached: the bell must always show the current numbers.
+router.use('/api', (req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
+
+router.get('/api/notifications', async (req, res) => res.json(await notificationPayload()));
+
+router.post('/api/notifications/read-all', async (req, res) => {
+    await db.run("UPDATE admin_notifications SET is_read = 1, read_at = datetime('now') WHERE is_read = 0");
+    res.json(await notificationPayload());
+});
+
+router.post('/api/notifications/:id/read', async (req, res) => {
+    if (!/^[0-9]{1,9}$/.test(req.params.id)) return res.status(400).json({ error: 'Invalid notification.' });
+    await db.run("UPDATE admin_notifications SET is_read = 1, read_at = datetime('now') WHERE id = ? AND is_read = 0", Number(req.params.id));
+    res.json(await notificationPayload());
+});
+
+router.get('/visitors', async (req, res) => {
+    const todayStart = startOfTodayUtc();
+    const count = async (sql, ...args) => (await db.get(sql, ...args)).n;
+
+    const stats = {
+        totalVisits: await count('SELECT COUNT(*) AS n FROM visits'),
+        uniqueVisitors: await count('SELECT COUNT(DISTINCT visitor_id) AS n FROM visits'),
+        todayVisits: await count('SELECT COUNT(*) AS n FROM visits WHERE created_at >= ?', todayStart),
+        sessions: await count('SELECT COUNT(*) AS n FROM visits WHERE is_new_session = 1'),
+        newSessions: await count('SELECT COUNT(*) AS n FROM visits WHERE is_new_session = 1 AND is_new_visitor = 1'),
+    };
+    stats.returningSessions = stats.sessions - stats.newSessions;
+
+    const products = new Map((await db.all('SELECT id, name FROM products')).map((p) => [String(p.id), p.name]));
+    const pageName = (path) => PAGE_NAMES[path] || (/^\/products\/(\d+)$/.test(path) ? `Product: ${products.get(path.split('/')[2]) || 'removed product'}` : path);
+
+    const topPages = (await db.all(
+        `SELECT path, COUNT(*) AS visits, COUNT(DISTINCT visitor_id) AS visitors
+         FROM visits GROUP BY path ORDER BY visits DESC, path LIMIT 10`)).map((p) => ({ ...p, name: pageName(p.path) }));
+
+    const recent = (await db.all(
+        'SELECT id, visitor_id, path, is_new_session, is_new_visitor, created_at FROM visits ORDER BY id DESC LIMIT 20'))
+        .map((v) => ({ ...v, name: pageName(v.path), when: kigaliFormat.format(utcDate(v.created_at)), who: v.visitor_id.slice(0, 8) }));
+
+    res.render('admin/visitors', { title: 'Website Visitors', stats, topPages, recent });
 });
 
 module.exports = router;

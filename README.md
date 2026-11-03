@@ -26,4 +26,10 @@ npm start                # http://localhost:3000
 Without the two `TURSO_*` variables the site still opens, but in **demo mode**: the data lives in a temporary
 file and is lost whenever Vercel restarts the function. Vercel's own page shows the real error in **Logs** if something is wrong.
 
+## Website visitors (admin)
+
+After a visitor accepts the cookie notice, Woodora counts anonymous visits (random ID, page, time - nothing personal).
+Admins see a notification bell (updates every 10 seconds, no refresh) and a **Website Visitors** page at `/admin/visitors`.
+Details, privacy notes and limitations: section 12 of `PROJECT_GUIDE.md`. Run the automated tests with `npm test`.
+
 More detail: `PROJECT_GUIDE.md`, `TESTING_CHECKLIST.md` and the Arabic guides (`WOODORA_ARABIC_*.md`).
