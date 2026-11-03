@@ -1,0 +1,74 @@
+<%- include('../partials/admin-top') %>
+<div class="admin-page-head">
+    <div>
+        <h1>Website Visitors</h1>
+        <p class="muted">Anonymous statistics from visitors who accepted the cookie notice. Times are in Rwanda time (CAT).</p>
+    </div>
+</div>
+
+<div class="stat-grid">
+    <div class="stat"><span class="stat-icon"><%- include('../partials/icon', { name: 'eye' }) %></span><span><strong><%= stats.totalVisits %></strong><small>Total visits (pages opened)</small></span></div>
+    <div class="stat"><span class="stat-icon"><%- include('../partials/icon', { name: 'user' }) %></span><span><strong><%= stats.uniqueVisitors %></strong><small>Unique visitors</small></span></div>
+    <div class="stat"><span class="stat-icon"><%- include('../partials/icon', { name: 'dashboard' }) %></span><span><strong><%= stats.todayVisits %></strong><small>Today's visits</small></span></div>
+    <div class="stat"><span class="stat-icon"><%- include('../partials/icon', { name: 'store' }) %></span><span><strong><%= stats.sessions %></strong><small>Visit sessions</small></span></div>
+</div>
+
+<div class="admin-two-col">
+    <section class="panel">
+        <div class="panel-head"><h2>Recent visitor activity</h2></div>
+        <% if (recent.length === 0) { %>
+            <p class="muted panel-empty">No visits recorded yet. They appear here once visitors accept the cookie notice and open a page.</p>
+        <% } else { %>
+            <div class="table-wrap">
+            <table class="table">
+                <thead><tr><th>When</th><th>Page</th><th>Visitor</th></tr></thead>
+                <tbody>
+                <% recent.forEach(function (v) { %>
+                    <tr>
+                        <td data-label="When"><%= v.when %></td>
+                        <td data-label="Page"><%= v.name %><% if (v.name !== v.path) { %> <small class="muted"><%= v.path %></small><% } %></td>
+                        <td data-label="Visitor">
+                            <code>#<%= v.who %></code>
+                            <% if (v.is_new_session) { %><span class="badge <%= v.is_new_visitor ? 'badge-paid' : 'badge-delivered' %>"><%= v.is_new_visitor ? 'New' : 'Returning' %></span><% } %>
+                        </td>
+                    </tr>
+                <% }) %>
+                </tbody>
+            </table>
+            </div>
+        <% } %>
+    </section>
+
+    <div>
+        <section class="panel">
+            <div class="panel-head"><h2>New vs returning</h2></div>
+            <% if (stats.sessions === 0) { %>
+                <p class="muted panel-empty">No sessions yet.</p>
+            <% } else {
+                const newPct = Math.round(stats.newSessions * 100 / stats.sessions); %>
+                <div class="split-bar" role="img" aria-label="<%= stats.newSessions %> sessions from new visitors, <%= stats.returningSessions %> from returning visitors">
+                    <span class="split-new" style="width: <%= newPct %>%"></span>
+                </div>
+                <ul class="split-legend">
+                    <li><span class="dot dot-new"></span> New visitors <strong><%= stats.newSessions %></strong> <small class="muted">(<%= newPct %>%)</small></li>
+                    <li><span class="dot dot-returning"></span> Returning visitors <strong><%= stats.returningSessions %></strong> <small class="muted">(<%= 100 - newPct %>%)</small></li>
+                </ul>
+                <p class="muted">Counted per visit session. A returning visitor is someone whose anonymous ID was seen before.</p>
+            <% } %>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head"><h2>Most visited pages</h2></div>
+            <% if (topPages.length === 0) { %>
+                <p class="muted panel-empty">No pages visited yet.</p>
+            <% } else { %>
+                <ol class="top-pages">
+                <% topPages.forEach(function (p) { %>
+                    <li><span class="top-page-name"><%= p.name %></span><span class="top-page-count"><strong><%= p.visits %></strong> <small class="muted">visit<%= p.visits === 1 ? '' : 's' %></small></span></li>
+                <% }) %>
+                </ol>
+            <% } %>
+        </section>
+    </div>
+</div>
+<%- include('../partials/admin-bottom') %>

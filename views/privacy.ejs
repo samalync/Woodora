@@ -1,0 +1,47 @@
+<%- include('partials/header') %>
+<section class="page-hero compact">
+    <p class="small-title">YOUR PRIVACY</p>
+    <h1>Privacy &amp; Cookies</h1>
+    <p>What Woodora remembers about your visit, and how to switch it off.</p>
+</section>
+<section class="section">
+    <div class="card prose">
+        <h2>Cookies the shop needs</h2>
+        <p>The cookie named <code>woodora</code> keeps you logged in, remembers your shopping cart and protects forms from misuse.
+           The shop cannot work without it, so it is always used.</p>
+
+        <h2>Anonymous visit statistics (only if you agree)</h2>
+        <p>If you press <strong>Accept</strong>, Woodora saves two random cookies and counts your visit so the owner can see how many people
+           visit and which pages are popular:</p>
+        <ul>
+            <li><code>woodora_vid</code> &ndash; a random anonymous ID, kept for 1 year. It lets us tell new visitors from returning ones.</li>
+            <li><code>woodora_sid</code> &ndash; a random ID for the current visit, which ends after 30 minutes without activity.</li>
+        </ul>
+        <p><strong>What is saved:</strong> the random IDs, the page you opened (for example <code>/products</code>) and the time.</p>
+        <p><strong>What is never saved with a visit:</strong> your name, email address, password, IP address, browser details, location,
+           or the account you are logged in with. The IDs are random and cannot be used to find out who you are.</p>
+        <p>Only the shop administrator can see the statistics. If you press <strong>No thanks</strong>, nothing is counted and these cookies are not set.</p>
+
+        <h2>Your choice</h2>
+        <% if (consentChoice === 'granted') { %>
+            <p>You have <strong>accepted</strong> anonymous visit statistics.</p>
+            <form action="/privacy/consent" method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="next" value="/privacy">
+                <button type="submit" name="choice" value="decline" class="btn btn-outline">Stop counting my visits and delete the cookies</button>
+            </form>
+        <% } else if (consentChoice === 'declined') { %>
+            <p>You have <strong>declined</strong> anonymous visit statistics.</p>
+            <form action="/privacy/consent" method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="next" value="/privacy">
+                <button type="submit" name="choice" value="accept" class="btn">Accept anonymous visit statistics</button>
+            </form>
+        <% } else { %>
+            <p>You have not chosen yet. Use the notice at the bottom of the page.</p>
+        <% } %>
+        <p class="muted">Declining deletes the two cookies from your browser. Visits already counted stay in the statistics, but without
+           the cookie they can no longer be linked to you.</p>
+    </div>
+</section>
+<%- include('partials/footer') %>

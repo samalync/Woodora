@@ -72,3 +72,16 @@ Tick each box while testing in the browser. Start with `npm run setup` and `npm 
 - [ ] Open /products/9999 -> friendly "Page not found"
 - [ ] Open a random address like /abc -> friendly "Page not found"
 - [ ] Type `<script>alert(1)</script>` in the contact form -> shown as plain text in the admin messages, nothing runs
+
+## Website visitors and notifications (manual checks; `npm test` covers the logic automatically)
+- [ ] Open the shop in a private window: the cookie notice appears; before pressing a button, the admin bell stays at 0
+- [ ] Press **Accept**, then open the home page -> within ~10 seconds the admin bell (admin page already open in another window, no refresh) shows a red 1
+- [ ] Click the bell: "A new visitor opened Woodora." with date, time and page; click **Mark read** -> the red number disappears
+- [ ] Browse Products and a product page in the same window -> no new notification (same session)
+- [ ] Reload a page quickly several times -> only one new visit in Admin > Website Visitors
+- [ ] **Mark all as read** clears the number; a new visitor (another browser) makes it appear again
+- [ ] Website Visitors page shows total visits, unique visitors, today's visits, recent activity, most visited pages and new vs returning
+- [ ] On /privacy press "Stop counting my visits" -> no more visits are recorded and the cookies are gone (browser dev tools > Application > Cookies)
+- [ ] Log in as a customer and open /admin/visitors -> "Access denied"; open /admin/api/notifications -> no data
+- [ ] Restart the server (`npm start`) -> visits and notifications are still there
+- [ ] Phone width: cookie notice, bell dropdown and the visitors tables are usable

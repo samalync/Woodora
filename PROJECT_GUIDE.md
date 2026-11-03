@@ -38,7 +38,9 @@ WOOdora/
 │   └── woodora-export.sql  Text export of the database (see section 6)
 ├── middleware/
 │   ├── auth.js          requireLogin / requireAdmin guards and safe redirects
-│   └── csrf.js          Protects forms against forged requests
+│   ├── csrf.js          Protects forms against forged requests
+│   └── visitors.js      Anonymous visit tracking (cookies, consent check, saving visits and notifications)
+├── tests/               Automated tests (npm test)
 ├── helpers/cart.js      Reads the cart and checks it against real prices and stock
 ├── routes/              One file per area of the site
 │   ├── pages.js         Home, Impact, Our Mission, Contact form
@@ -46,6 +48,7 @@ WOOdora/
 │   ├── cart.js          Add / change quantity / remove
 │   ├── auth.js          Register, customer login, admin login, logout
 │   ├── checkout.js      Checkout, simulated payments, order history
+│   ├── privacy.js       Privacy page and the Accept / Decline cookie choice
 │   └── admin.js         Everything for the administrator
 ├── views/               The HTML templates (header and footer are written once in views/partials)
 │   ├── login-choice.ejs     Login selection page (Customer or Admin)
@@ -56,6 +59,7 @@ WOOdora/
 ├── public/              Files the browser downloads directly
 │   ├── css/style.css    The one stylesheet for the whole site
 │   ├── js/main.js       Mobile menu, dismissable messages, delete confirmation, image preview
+│   ├── js/admin-notifications.js  The admin notification bell (checks for news every 10 seconds)
 │   └── images/          Product and background pictures
 └── _original/           Backup of the project before we added the server
 ```
@@ -70,6 +74,8 @@ WOOdora/
 | `orders` | One row per order: customer and delivery details, total, payment method, **`payment_status`** (Unpaid/Paid) and **`order_status`** (Pending/Paid/Delivered), kept separate. |
 | `order_items` | The products in each order. Copies the **product name and price at purchase time**, so old orders never change when a product is edited or deleted. |
 | `messages` | Messages sent through the contact form. |
+| `visits` | One row per recorded page view of the public site: random `visitor_id`, random `session_id`, `path`, whether it started a new session / a new visitor, UTC time. **No personal data.** |
+| `admin_notifications` | The messages in the admin bell ("A new visitor opened Woodora."), with an `is_read` flag and the time. |
 
 The cart is not a table: it lives in the user's session as "product id -> quantity". Prices are never stored in it.
 
@@ -190,3 +196,40 @@ Known limits (fine for a demonstration): logins and carts live in a signed cooki
 ## Deploying to Vercel
 
 See the "Deploy to Vercel" section of `README.md`. In short: create a Turso database, add `SESSION_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` in the Vercel project settings, and redeploy. The tables, products and admin account are created on the first visit.
+
+
+## 12. Website visitor tracking and admin notifications
+
+**What the administrator gets:** a notification bell in the top bar of every admin page, and a **Website Visitors** page
+(`/admin/visitors`) with total visits, unique visitors, today's visits, sessions, recent activity, most visited pages and new vs returning visitors.
+
+### How a visit is counted
+1. A first-time visitor sees a **cookie notice** (`views/partials/consent-banner.ejs`). Nothing is counted and no tracking cookie is set until they press **Accept**. Their choice is remembered in the `woodora_consent` cookie, and they can change it any time on `/privacy`. Declining deletes the tracking cookies.
+2. After consent, `middleware/visitors.js` runs on every request. It counts only real page views: `GET` requests for the public pages (home, products, product details, mission, impact, contact, privacy) that ask for HTML. It ignores robots, prefetches, images, the query string (`?q=...`), 404s, other customer pages, and **administrators** browsing the shop.
+3. Two random cookies are used: `woodora_vid` (anonymous visitor, 1 year) and `woodora_sid` (visit session, renewed on every page view, ends after **30 minutes** of inactivity). Navigating between pages inside one session adds visits but **not** a new session.
+4. The same page opened again by the same session within **10 seconds** (a reload) is saved only once.
+5. The first page of a new session is saved together with an `admin_notifications` row in one database transaction ("A new visitor opened Woodora." for an unknown visitor id, "A returning visitor opened Woodora." for a known one). A unique index guarantees a session can start only once even if two requests arrive together.
+
+**Definitions on the Website Visitors page:** *Total visits* = pages opened (rows in `visits`). *Unique visitors* = different `visitor_id`s. *Visit sessions* = sessions started. *New vs returning* is counted per session. *Today* starts at midnight Rwanda time (UTC+2); times are saved in UTC and displayed as Rwanda time (CAT).
+
+### How the admin is notified (without refreshing)
+`public/js/admin-notifications.js` asks `GET /admin/api/notifications` every 10 seconds (and pauses while the browser tab is hidden). The answer is `{ unread, notifications }`, which updates the red number on the bell and the dropdown list. Buttons call `POST /admin/api/notifications/:id/read` and `POST /admin/api/notifications/read-all` (they send the CSRF token like every other form).
+
+**Why polling and not Server-Sent Events / Socket.IO?** The site is designed to run on Vercel, whose serverless functions cannot keep a connection open for long, and polling every 10 seconds is plenty for a shop of this size. It also needs no new library.
+
+### Security and privacy
+- Every `/admin/...` route, including `/admin/api/...`, is behind `requireAdmin` on the server. Customers get `403`, logged-out visitors get `401` (JSON) or a redirect to the admin login. Customers never receive visitor data.
+- Stored per visit: random visitor id, random session id, page path, time. **Not stored:** name, email, IP address, user agent, referrer, query string, or the logged-in account. The id cannot be linked to a person.
+- Cookies are `HttpOnly`, `SameSite=Lax` (and `Secure` on Vercel). All SQL uses `?` placeholders and only a fixed list of page paths can be stored.
+- A tracking error never breaks the website: it is logged and the page is still shown.
+
+### Known limitations
+- Only visitors who accept the cookie notice are counted, so the numbers are lower than real traffic.
+- Anyone can create "visits" by sending requests with the consent cookie and a browser-like `User-Agent` and fresh random cookies; there is no rate limiting. Fake visits would flood the bell. Add rate limiting if the site gets real traffic.
+- Robot detection is a simple keyword list; some robots will be counted.
+- Unique visitors are really unique *browsers*: someone using two browsers, or clearing cookies, counts again.
+- Old rows are never deleted automatically. Delete old `visits` / read `admin_notifications` periodically if the tables grow large.
+- The cookie notice text is a sensible default for a small shop, not legal advice. Check the data-protection rules that apply to you (for example Rwanda's Law No. 058/2021 and, for EU visitors, the GDPR/ePrivacy rules).
+
+### Tests
+`npm test` starts the real server with a throw-away database and checks the whole feature over HTTP (see `tests/visitor-tracking.test.js`).

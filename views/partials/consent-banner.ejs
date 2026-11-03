@@ -1,0 +1,16 @@
+<%# Cookie notice for the anonymous visit statistics. Shown until the visitor chooses. Works without JavaScript. %>
+<% if (!consentChoice) { %>
+<section class="consent" aria-labelledby="consent-title">
+    <div class="consent-text">
+        <strong id="consent-title">Help us count visits?</strong>
+        <p>With your permission, Woodora saves a random anonymous ID in a cookie to count visits and see which pages are popular.
+           We never store your name, email or IP address with it. <a href="/privacy">Read more</a></p>
+    </div>
+    <form action="/privacy/consent" method="post" class="consent-actions">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <input type="hidden" name="next" value="<%= currentPath %>">
+        <button type="submit" name="choice" value="decline" class="btn btn-outline btn-small">No thanks</button>
+        <button type="submit" name="choice" value="accept" class="btn btn-small">Accept</button>
+    </form>
+</section>
+<% } %>

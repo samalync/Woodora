@@ -10,6 +10,7 @@ const cookieSession = require('cookie-session');
 
 const db = require('./db/database');
 const { addCsrfToken, verifyCsrfToken } = require('./middleware/csrf');
+const { trackVisits } = require('./middleware/visitors');
 
 const app = express();
 const onVercel = Boolean(process.env.VERCEL);
@@ -61,6 +62,7 @@ app.use((req, res, next) => {
     res.locals.cartCount = 0;
     res.locals.flash = null;
     res.locals.csrfToken = '';
+    res.locals.consentChoice = null; // cookie notice choice: 'granted', 'declined' or null (not asked yet)
     res.locals.rwf = (amount) => Number(amount).toLocaleString('en-US') + ' RWF';
     // Business contact details shown in the footer and on the Contact page. Change them in this one place.
     // Leave email empty ('') to hide the email line until a public address exists.
@@ -126,8 +128,10 @@ app.use((req, res, next) => {
 });
 
 app.use(verifyCsrfToken); // checks every POST form
+app.use(trackVisits);     // anonymous visit statistics (only after the visitor accepts cookies)
 
 app.use('/', require('./routes/pages'));
+app.use('/', require('./routes/privacy'));
 app.use('/', require('./routes/auth'));
 app.use('/products', require('./routes/shop'));
 app.use('/cart', require('./routes/cart'));

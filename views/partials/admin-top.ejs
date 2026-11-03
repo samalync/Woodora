@@ -14,6 +14,23 @@
         <span>Woodora</span><small class="admin-tag">Admin</small>
     </a>
     <div class="admin-topbar-actions">
+        <%# Notification bell: the number comes from the server now and is refreshed by public/js/admin-notifications.js %>
+        <div class="notif" data-notifications data-csrf="<%= csrfToken %>">
+            <button type="button" class="notif-button" aria-haspopup="true" aria-expanded="false" aria-controls="notif-panel"
+                    aria-label="Notifications, <%= unreadNotifications %> unread">
+                <%- include('icon', { name: 'bell' }) %>
+                <span class="notif-badge" data-notif-count <%= unreadNotifications === 0 ? 'hidden' : '' %>><%= unreadNotifications > 99 ? '99+' : unreadNotifications %></span>
+            </button>
+            <div class="notif-panel" id="notif-panel" hidden>
+                <div class="notif-head">
+                    <strong>Notifications</strong>
+                    <button type="button" class="notif-markall" data-notif-readall>Mark all as read</button>
+                </div>
+                <ul class="notif-list" data-notif-list></ul>
+                <a class="notif-foot" href="/admin/visitors">Open Website Visitors &rarr;</a>
+            </div>
+            <span class="sr-only" role="status" aria-live="polite" data-notif-announce></span>
+        </div>
         <a href="/" target="_blank" rel="noopener" class="topbar-link"><%- include('icon', { name: 'store' }) %> View store</a>
         <span class="topbar-user"><%= currentUser.name %></span>
         <form action="/logout" method="post" class="inline-form">
@@ -29,6 +46,7 @@
             <a href="/admin" class="<%= currentPath === '/admin' ? 'active' : '' %>"><%- include('icon', { name: 'dashboard' }) %> Dashboard</a>
             <a href="/admin/products" class="<%= currentPath.startsWith('/admin/products') ? 'active' : '' %>"><%- include('icon', { name: 'box' }) %> Products</a>
             <a href="/admin/orders" class="<%= currentPath.startsWith('/admin/orders') ? 'active' : '' %>"><%- include('icon', { name: 'orders' }) %> Orders</a>
+            <a href="/admin/visitors" class="<%= currentPath.startsWith('/admin/visitors') ? 'active' : '' %>"><%- include('icon', { name: 'eye' }) %> Website Visitors</a>
             <a href="/admin/messages" class="<%= currentPath.startsWith('/admin/messages') ? 'active' : '' %>"><%- include('icon', { name: 'mail' }) %> Messages</a>
         </nav>
     </aside>
