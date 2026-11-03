@@ -42,6 +42,7 @@ WOOdora/
 │   └── visitors.js      Anonymous visit tracking (cookies, consent check, saving visits and notifications)
 ├── tests/               Automated tests (npm test)
 ├── helpers/cart.js      Reads the cart and checks it against real prices and stock
+├── helpers/payment-methods.js  Which payment methods are switched on (for checkout) and all their names (for old orders)
 ├── routes/              One file per area of the site
 │   ├── pages.js         Home, Impact, Our Mission, Contact form
 │   ├── shop.js          Product list (search, filter) and product details
@@ -75,6 +76,7 @@ WOOdora/
 | `order_items` | The products in each order. Copies the **product name and price at purchase time**, so old orders never change when a product is edited or deleted. |
 | `messages` | Messages sent through the contact form. |
 | `visits` | One row per recorded page view of the public site: random `visitor_id`, random `session_id`, `path`, whether it started a new session / a new visitor, UTC time. **No personal data.** |
+| `payment_methods` | Three fixed rows (`momo`, `card`, `cod`): display name and an `enabled` flag (1/0) that the administrator switches in Admin > Payment methods. Created and filled automatically on the first request. |
 | `admin_notifications` | The messages in the admin bell ("A new visitor opened Woodora."), with an `is_read` flag and the time. |
 
 The cart is not a table: it lives in the user's session as "product id -> quantity". Prices are never stored in it.
@@ -159,7 +161,7 @@ The order is created in the database at checkout as **Pending + Unpaid**, and th
 
 ## 9. Administrator workflow
 
-Log in on the **Admin login** page (you land on the dashboard; the admin area has its own sidebar: Dashboard, Products, Orders, Messages) -> **Dashboard** (counts, paid revenue, recent orders) ->
+Log in on the **Admin login** page (you land on the dashboard; the admin area has its own sidebar: Dashboard, Products, Orders, Website Visitors, Messages, Payment methods) -> **Dashboard** (counts, paid revenue, recent orders) ->
 **Products** (add, edit, delete; change price, stock, category, featured flag) ->
 **Orders** (filter by status) -> open an order -> change **Order status** and **Payment status** -> Save. Customers see the change in My Orders.
 **Messages** shows what customers sent through the contact form.
@@ -187,7 +189,7 @@ Why two separate statuses? An order can be *Pending* and *Unpaid* (new), *Paid* 
 
 ## Changing the placeholder contact details
 
-The email, phone, address and opening hours in the footer and contact page are **placeholders**. Replace them in one place: the `res.locals.business` block in `app.js`.
+The email, phone, address and opening hours in the footer and contact page come from one place: the `res.locals.business` block in `app.js`. The phone and address there are the real ones; the email is empty on purpose (an empty email hides the email line) and the opening hours have not been confirmed.
 
 To use a new product picture, copy it into `public/images/`, then pick it from the Image list when adding or editing a product.
 
@@ -233,3 +235,14 @@ See the "Deploy to Vercel" section of `README.md`. In short: create a Turso data
 
 ### Tests
 `npm test` starts the real server with a throw-away database and checks the whole feature over HTTP (see `tests/visitor-tracking.test.js`).
+
+## 13. Payment methods on/off (administrator)
+
+Admin > **Payment methods** (`/admin/payment-methods`, protected by `requireAdmin`) shows Mobile Money, Card and Cash on Delivery, each with an On/Off switch and one Save button (a normal form with the CSRF token).
+
+- **Rule:** at least one method must stay On. If every switch is Off, nothing is saved and a clear error is shown.
+- **Checkout** (`routes/checkout.js`) lists only the methods that are On. The server checks again when the order is submitted, so a method that is Off is refused even if someone sends it by hand (the order is not created).
+- **Existing orders are not affected.** An order keeps its own `payment_method`, so an unpaid order can still be paid with it after the method is switched off, and the order pages still show its name.
+- The `payment_methods` table is created and seeded (all three On) by `db/seed.js` on the first request, like the other tables, so it also appears by itself on Turso. Re-running setup never changes the admin's choice.
+- No new environment variables.
+- Tests: `tests/payment-methods.test.js` (toggling, the at-least-one rule, checkout hiding a method, the server refusing it, existing orders, customer = Access denied).

@@ -11,6 +11,13 @@ const db = require('./database');
 
 const categories = ['Utensils', 'Bowls & Plates', 'Trays & Boards', 'Sets'];
 
+// Payment methods (code, display name). All start switched on; the administrator can change this later.
+const paymentMethods = [
+    ['momo', 'Mobile Money (simulated)'],
+    ['card', 'Card payment (simulated)'],
+    ['cod', 'Cash on Delivery'],
+];
+
 const products = [
     // name, description, price (RWF), stock, image, category, featured
     ['Wooden Utensil Holder', 'A sturdy wooden holder that keeps your spoons and spatulas within easy reach.', 8000, 25, 'utensil-holder.jpeg', 'Utensils', 1],
@@ -34,6 +41,11 @@ async function setupDatabase({ allowGeneratedPassword }) {
 
     // 2. Categories
     for (const name of categories) await db.run('INSERT OR IGNORE INTO categories (name) VALUES (?)', name);
+
+    // 2b. Payment methods. INSERT OR IGNORE: rows that already exist (and the admin's on/off choice) are never changed.
+    for (const [code, name] of paymentMethods) {
+        await db.run('INSERT OR IGNORE INTO payment_methods (code, name, enabled) VALUES (?, ?, 1)', code, name);
+    }
 
     // 3. Products - only when the table is empty, so products deleted by the admin never come back.
     //    The check and the inserts happen in one transaction, so two servers starting together cannot both add them.

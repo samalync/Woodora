@@ -495,6 +495,27 @@ p { margin-bottom: 12px; }
 .btn-outline-light { background: transparent; border-color: var(--gold-light); color: var(--gold-light); }
 .btn-outline-light:hover { background: var(--gold-light); border-color: var(--gold-light); color: var(--espresso); }
 
+/* ---------- 13b. PAYMENT METHODS (admin on/off switches) ---------- */
+.pm-list { list-style: none; margin: 0 0 18px; padding: 0; }
+.pm-row { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.pm-row:last-child { border-bottom: none; }
+.pm-row .method-icon { background: #f1e6d1; }
+.pm-text { flex: 1; min-width: 0; }
+.pm-text strong { display: block; }
+.pm-text small { color: var(--muted); }
+.switch { position: relative; display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-weight: bold; flex: none; }
+.switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.switch-track { position: relative; width: 48px; height: 28px; border-radius: 14px; background: #a39279; transition: background var(--ease); flex: none; }
+.switch-track::after { content: ''; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; transition: transform var(--ease); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); }
+.switch input:checked + .switch-track { background: var(--success); }
+.switch input:checked + .switch-track::after { transform: translateX(20px); }
+.switch input:focus-visible + .switch-track { outline: 3px solid var(--gold); outline-offset: 2px; }
+.switch-state { min-width: 28px; }
+.switch-state-on { display: none; color: var(--success); }
+.switch-state-off { color: var(--muted); }
+.switch input:checked ~ .switch-state-on { display: inline; }
+.switch input:checked ~ .switch-state-off { display: none; }
+
 /* ---------- 14. TABLET AND MOBILE ---------- */
 @media (max-width: 1000px) {
     .menu-toggle { display: flex; }

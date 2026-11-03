@@ -1,0 +1,31 @@
+<%- include('../partials/admin-top') %>
+<div class="admin-page-head">
+    <div>
+        <h1>Payment methods</h1>
+        <p class="muted">Choose which payment methods customers can use at checkout.</p>
+    </div>
+</div>
+
+<section class="panel">
+    <form action="/admin/payment-methods" method="post">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <% const methodIcons = { momo: 'phone', card: 'card', cod: 'cash' }; %>
+        <ul class="pm-list">
+            <% methods.forEach(function (m) { %>
+                <li class="pm-row">
+                    <span class="method-icon"><%- include('../partials/icon', { name: methodIcons[m.code] }) %></span>
+                    <span class="pm-text"><strong><%= m.name %></strong><small><%= hints[m.code] %></small></span>
+                    <label class="switch">
+                        <input type="checkbox" role="switch" name="enabled" value="<%= m.code %>" <%= m.enabled === 1 ? 'checked' : '' %> aria-label="<%= m.name %>">
+                        <span class="switch-track" aria-hidden="true"></span>
+                        <span class="switch-state switch-state-on" aria-hidden="true">On</span>
+                        <span class="switch-state switch-state-off" aria-hidden="true">Off</span>
+                    </label>
+                </li>
+            <% }) %>
+        </ul>
+        <p class="muted">At least one method must stay on. Orders that already exist are not affected: an unpaid order can still be paid with the method it was created with.</p>
+        <button type="submit" class="btn btn-large">Save</button>
+    </form>
+</section>
+<%- include('../partials/admin-bottom') %>

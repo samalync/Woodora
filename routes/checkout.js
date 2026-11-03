@@ -9,15 +9,14 @@ const express = require('express');
 const db = require('../db/database');
 const { requireLogin } = require('../middleware/auth');
 const { getCartDetails } = require('../helpers/cart');
+const { enabledMethods, methodLabels } = require('../helpers/payment-methods');
 const router = express.Router();
 
 router.use(['/checkout', '/orders'], requireLogin); // customers must be logged in
 
-const METHODS = {
-    momo: 'Mobile Money (simulated)',
-    card: 'Card payment (simulated)',
-    cod: 'Cash on Delivery',
-};
+// Payment methods come from the database (payment_methods): the administrator switches them on and off.
+//   enabledMethods() = what a customer may choose NOW (used by the checkout page and checked again on the server)
+//   methodLabels()   = names of all methods, for showing existing orders (they keep the method they were created with)
 const PHONE_PATTERN = /^(\+?250|0)?7[2389]\d{7}$/; // Rwandan mobile numbers
 
 // A normal "cannot buy this" situation (safe to show to the customer), not a program error.
@@ -39,9 +38,15 @@ router.get('/checkout', async (req, res) => {
         req.session.flash = { type: 'error', text: cart.notices.join(' ') };
         return res.redirect('/cart');
     }
+    const methods = await enabledMethods();
+    const codes = Object.keys(methods);
+    if (codes.length === 0) { // should never happen (the admin page keeps one method on), but never show an unusable form
+        req.session.flash = { type: 'error', text: 'Checkout is not available right now. Please try again later.' };
+        return res.redirect('/cart');
+    }
     const user = req.session.user;
-    res.render('checkout', { title: 'Checkout', cart, errors: {}, methods: METHODS,
-        values: { name: user.name, email: user.email, phone: '', address: '', city: '', method: 'momo' } });
+    res.render('checkout', { title: 'Checkout', cart, errors: {}, methods,
+        values: { name: user.name, email: user.email, phone: '', address: '', city: '', method: codes[0] } });
 });
 
 router.post('/checkout', async (req, res) => {
@@ -59,7 +64,10 @@ router.post('/checkout', async (req, res) => {
     if (!/^\+?[0-9]{9,15}$/.test(values.phone)) errors.phone = 'Please enter a valid phone number (digits only, 9-15 numbers).';
     if (values.address.length < 5 || values.address.length > 200) errors.address = 'Please enter your delivery address (5-200 characters).';
     if (values.city.length < 2 || values.city.length > 60) errors.city = 'Please enter your city or district.';
-    if (!METHODS[values.method]) errors.method = 'Please choose a payment method.';
+    // The server decides which methods are allowed - hiding a radio button on the page is not enough.
+    const methods = await enabledMethods();
+    if (!Object.hasOwn(await methodLabels(), values.method)) errors.method = 'Please choose a payment method.';
+    else if (!Object.hasOwn(methods, values.method)) errors.method = 'Sorry, that payment method is not available right now. Please choose another one.';
 
     const cart = await getCartDetails(req.session);
     if (cart.items.length === 0) {
@@ -67,7 +75,7 @@ router.post('/checkout', async (req, res) => {
         return res.redirect('/products');
     }
     if (Object.keys(errors).length > 0) {
-        return res.status(400).render('checkout', { title: 'Checkout', cart, errors, values, methods: METHODS });
+        return res.status(400).render('checkout', { title: 'Checkout', cart, errors, values, methods });
     }
 
     // Create the order inside ONE database transaction: either everything is saved, or nothing.
@@ -135,7 +143,7 @@ router.get('/orders/:id/pay', async (req, res) => {
     const pending = req.session.momoPending;
     // Mobile Money step 2 is shown only after a phone number was submitted for THIS order.
     const momoStep = order.payment_method === 'momo' && pending && pending.orderId === order.id ? pending : null;
-    res.render('pay', { title: 'Payment', order, momoStep, errors: {}, values: {}, methodName: METHODS[order.payment_method] });
+    res.render('pay', { title: 'Payment', order, momoStep, errors: {}, values: {}, methodName: (await methodLabels())[order.payment_method] });
 });
 
 // Mobile Money step 1: customer enters a phone number. We never ask for a PIN.
@@ -144,7 +152,7 @@ router.post('/orders/:id/pay/momo', async (req, res) => {
     if (!order || order.payment_method !== 'momo') return;
     const phone = String(req.body.momoPhone || '').replace(/\s+/g, '');
     if (!PHONE_PATTERN.test(phone)) {
-        return res.status(400).render('pay', { title: 'Payment', order, momoStep: null, methodName: METHODS.momo,
+        return res.status(400).render('pay', { title: 'Payment', order, momoStep: null, methodName: (await methodLabels()).momo,
             errors: { momoPhone: 'Enter a valid Rwandan Mobile Money number, e.g. 0788 123 456.' }, values: { momoPhone: phone } });
     }
     req.session.momoPending = { orderId: order.id, maskedPhone: phone.slice(0, 3) + '****' + phone.slice(-3) };
@@ -193,7 +201,7 @@ router.post('/orders/:id/pay/card', async (req, res) => {
 
     if (Object.keys(errors).length > 0) {
         // Only the name and expiry are shown again; card number and CVV are never sent back.
-        return res.status(400).render('pay', { title: 'Payment', order, momoStep: null, methodName: METHODS.card,
+        return res.status(400).render('pay', { title: 'Payment', order, momoStep: null, methodName: (await methodLabels()).card,
             errors, values: { cardName, expiry } });
     }
     await markPaid(order.id); // card details are discarded here
@@ -204,14 +212,14 @@ router.post('/orders/:id/pay/card', async (req, res) => {
 // ---------- Order history ----------
 router.get('/orders', async (req, res) => {
     const orders = await db.all('SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC', req.session.user.id);
-    res.render('orders', { title: 'My Orders', orders, methods: METHODS });
+    res.render('orders', { title: 'My Orders', orders, methods: await methodLabels() });
 });
 
 router.get('/orders/:id', async (req, res, next) => {
     const order = await findMyOrder(req, req.params.id);
     if (!order) return next();
     const items = await db.all('SELECT * FROM order_items WHERE order_id = ?', order.id);
-    res.render('order', { title: `Order #${order.id}`, order, items, methodName: METHODS[order.payment_method] });
+    res.render('order', { title: `Order #${order.id}`, order, items, methodName: (await methodLabels())[order.payment_method] });
 });
 
 module.exports = router;

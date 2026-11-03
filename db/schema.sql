@@ -92,3 +92,12 @@ CREATE TABLE IF NOT EXISTS admin_notifications (
     read_at    TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_notifications_unread ON admin_notifications (is_read, id);
+
+-- ---------- Payment methods the administrator can switch on and off ----------
+-- Exactly three rows (momo, card, cod), created by db/seed.js. enabled = 1 means customers can choose it at checkout.
+-- Orders keep their own payment_method text, so switching a method off never changes existing orders.
+CREATE TABLE IF NOT EXISTS payment_methods (
+    code    TEXT PRIMARY KEY CHECK (code IN ('momo', 'card', 'cod')),
+    name    TEXT NOT NULL,                                                  -- name shown to customers and in the admin area
+    enabled INTEGER NOT NULL DEFAULT 1 CHECK (enabled IN (0, 1))
+);

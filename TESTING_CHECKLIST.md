@@ -15,7 +15,7 @@ Tick each box while testing in the browser. Start with `npm run setup` and `npm 
 - [ ] Register form has no role option; the new account can not open /admin
 
 ## Browsing
-- [ ] Home page shows the logo, menu, 3 featured products and the footer with contact info (placeholders)
+- [ ] Home page shows the logo, menu, 3 featured products and the footer with the real contact info
 - [ ] Products page shows all 13 products with picture, description, RWF price and stock
 - [ ] Search "bowl" -> only matching products; search for nonsense -> "No products match" message
 - [ ] Filter by each of the 4 categories (Utensils 5, Bowls & Plates 3, Trays & Boards 2, Sets 3)
@@ -85,3 +85,12 @@ Tick each box while testing in the browser. Start with `npm run setup` and `npm 
 - [ ] Log in as a customer and open /admin/visitors -> "Access denied"; open /admin/api/notifications -> no data
 - [ ] Restart the server (`npm start`) -> visits and notifications are still there
 - [ ] Phone width: cookie notice, bell dropdown and the visitors tables are usable
+
+## Payment methods on/off (manual checks; `npm test` covers the logic automatically)
+- [ ] Admin sidebar has **Payment methods**; the page lists Mobile Money, Card and Cash on Delivery, all On
+- [ ] Switch Card Off, press Save -> "Payment methods updated." and Card stays Off after reloading
+- [ ] Customer checkout now shows only Mobile Money and Cash on Delivery; switch Card On again -> all three are back
+- [ ] Switch all three Off, press Save -> error "At least one payment method must stay on", nothing saved
+- [ ] An unpaid Card order created earlier can still be paid after Card is switched Off (My Orders > Pay)
+- [ ] Log in as a customer and open /admin/payment-methods -> "Access denied"
+

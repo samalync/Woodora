@@ -32,4 +32,8 @@ After a visitor accepts the cookie notice, Woodora counts anonymous visits (rand
 Admins see a notification bell (updates every 10 seconds, no refresh) and a **Website Visitors** page at `/admin/visitors`.
 Details, privacy notes and limitations: section 12 of `PROJECT_GUIDE.md`. Run the automated tests with `npm test`.
 
+## Payment methods (admin)
+
+Admin > **Payment methods** switches Mobile Money, Card and Cash on Delivery on or off (at least one must stay on). Checkout shows only the methods that are on and the server refuses the others; existing orders keep the method they were created with. Details: section 13 of `PROJECT_GUIDE.md`.
+
 More detail: `PROJECT_GUIDE.md`, `TESTING_CHECKLIST.md` and the Arabic guides (`WOODORA_ARABIC_*.md`).

@@ -5,6 +5,7 @@ const path = require('path');
 const express = require('express');
 const db = require('../db/database');
 const { requireAdmin } = require('../middleware/auth');
+const { allMethods } = require('../helpers/payment-methods');
 const router = express.Router();
 
 router.use(requireAdmin);
@@ -156,6 +157,37 @@ router.post('/orders/:id/status', async (req, res, next) => {
 router.get('/messages', async (req, res) => {
     const messages = await db.all('SELECT * FROM messages ORDER BY id DESC');
     res.render('admin/messages', { title: 'Customer Messages', messages });
+});
+
+// ---------- Payment methods (switch on / off) ----------
+// Customers can only choose methods that are On. Orders that already exist are never changed by this page.
+const METHOD_HINTS = {
+    momo: 'Customer approves a payment request on their phone (demo).',
+    card: 'Customer enters test card details on the payment page (demo).',
+    cod: 'Customer pays in cash when the order is delivered.',
+};
+
+async function showPaymentMethods(res, status = 200) {
+    res.status(status).render('admin/payment-methods', { title: 'Payment methods', methods: await allMethods(), hints: METHOD_HINTS });
+}
+
+router.get('/payment-methods', (req, res) => showPaymentMethods(res));
+
+router.post('/payment-methods', async (req, res) => {
+    // Every ticked switch sends enabled=<code>; a switch that is Off sends nothing. Unknown values are ignored.
+    const on = [].concat(req.body.enabled || []).map(String);
+    const methods = await allMethods();
+    const wanted = methods.map((m) => ({ code: m.code, enabled: on.includes(m.code) ? 1 : 0 }));
+
+    if (!wanted.some((m) => m.enabled === 1)) { // rule: at least one method must stay on
+        res.locals.flash = { type: 'error', text: 'At least one payment method must stay on, so customers can still pay. Nothing was saved.' };
+        return showPaymentMethods(res, 400); // the page shows what is really saved
+    }
+    await db.transaction(async (tx) => {
+        for (const m of wanted) await tx.run('UPDATE payment_methods SET enabled = ? WHERE code = ?', m.enabled, m.code);
+    });
+    req.session.flash = { type: 'success', text: 'Payment methods updated.' };
+    res.redirect('/admin/payment-methods');
 });
 
 // ---------- Website visitors and notifications ----------

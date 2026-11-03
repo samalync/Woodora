@@ -25,7 +25,7 @@ function requireAdmin(req, res, next) {
     // Background requests from the admin pages (/admin/api/...) get a short JSON answer, not a redirect or a web page.
     if (req.originalUrl.startsWith('/admin/api/')) {
         if (!req.session.user) return res.status(401).json({ error: 'Please log in as administrator.' });
-        if (req.session.user.role !== 'admin') return res.status(403).json({ error: 'Administrators only.' });
+        if (req.session.user.role !== 'admin') return res.status(403).json({ error: 'Access denied: administrators only.' });
         return next();
     }
     if (!req.session.user) {
