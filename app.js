@@ -62,11 +62,12 @@ app.use((req, res, next) => {
     res.locals.flash = null;
     res.locals.csrfToken = '';
     res.locals.rwf = (amount) => Number(amount).toLocaleString('en-US') + ' RWF';
-    // PLACEHOLDER business details - replace with the real ones in one place.
+    // Business contact details shown in the footer and on the Contact page. Change them in this one place.
+    // Leave email empty ('') to hide the email line until a public address exists.
     res.locals.business = {
-        email: 'info@woodora.example',
-        phone: '+250 7XX XXX XXX',
-        address: '[Shop address - to be added], Kigali, Rwanda',
+        email: '',
+        phone: '0796110934',
+        address: 'Kicukiro, Kigali, Rwanda',
         hours: 'Mon - Sat, 8:00 - 18:00',
     };
     next();

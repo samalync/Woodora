@@ -24,11 +24,10 @@
     </div>
     <div class="card info-card">
         <h2>Visit or call</h2>
-        <p><%- include('partials/icon', { name: 'mail' }) %> <span><strong>Email</strong><br><%= business.email %></span></p>
+        <% if (business.email) { %><p><%- include('partials/icon', { name: 'mail' }) %> <span><strong>Email</strong><br><%= business.email %></span></p><% } %>
         <p><%- include('partials/icon', { name: 'phone' }) %> <span><strong>Phone</strong><br><%= business.phone %></span></p>
         <p><%- include('partials/icon', { name: 'pin' }) %> <span><strong>Address</strong><br><%= business.address %></span></p>
         <p><%- include('partials/icon', { name: 'truck' }) %> <span><strong>Opening hours</strong><br><%= business.hours %></span></p>
-        <p class="placeholder-note">These contact details are placeholders until the real ones are added.</p>
     </div>
 </section>
 <%- include('partials/footer') %>

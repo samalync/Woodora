@@ -35,11 +35,10 @@
         </div>
         <div>
             <h3>Contact us</h3>
-            <p><%- include('icon', { name: 'mail' }) %> <%= business.email %></p>
+            <% if (business.email) { %><p><%- include('icon', { name: 'mail' }) %> <%= business.email %></p><% } %>
             <p><%- include('icon', { name: 'phone' }) %> <%= business.phone %></p>
             <p><%- include('icon', { name: 'pin' }) %> <%= business.address %></p>
             <p><%= business.hours %></p>
-            <p class="placeholder-note">Contact details above are placeholders.</p>
         </div>
     </div>
     <div class="footer-bottom">
