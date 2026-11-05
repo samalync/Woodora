@@ -768,6 +768,7 @@ p { margin-bottom: var(--sp-12); }
 }
 
 @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
     * { animation: none !important; transition: none !important; }
 }
 
@@ -826,6 +827,19 @@ p { margin-bottom: var(--sp-12); }
     .notif-panel { position: fixed; left: 12px; right: 12px; top: 60px; width: auto; max-width: none; }
 }
 
+/* ---------- 14b. TOAST: short message after Add to Cart ---------- */
+.toast-host { position: fixed; top: 84px; right: var(--sp-16); left: var(--sp-16); z-index: 120; display: flex; justify-content: flex-end; pointer-events: none; }
+.toast { pointer-events: auto; display: flex; align-items: center; gap: var(--sp-12); width: 100%; max-width: 420px; padding: var(--sp-8) var(--sp-8) var(--sp-8) var(--sp-16); border: 1px solid; border-radius: var(--radius); box-shadow: var(--shadow-hover); font-weight: bold; font-size: var(--fs-sm); animation: slide-in 0.25s ease; }
+.toast > span { flex: 1; min-width: 0; }
+.toast-success { background: var(--success-soft); border-color: var(--success-border); color: var(--success-text); }
+.toast-error { background: var(--danger-bg); border-color: var(--danger-border); color: var(--danger-text); }
+.toast-link { color: inherit; white-space: nowrap; display: inline-flex; align-items: center; min-height: var(--control-md); }
+.toast-link:hover { color: inherit; }
+.toast-close { flex: none; width: var(--control-md); height: var(--control-md); background: none; border: none; color: inherit; font-size: var(--fs-xl); line-height: 1; cursor: pointer; }
+.cart-badge.bump { animation: cart-bump 0.4s ease; }
+@keyframes cart-bump { 40% { transform: scale(1.35); } }
+.btn.is-busy:disabled { background: var(--gold-dark); border-color: var(--gold-dark); cursor: progress; }
+
 /* ---------- 15. PHONE ADJUSTMENTS (last, so they win over the rules above) ---------- */
 @media (max-width: 700px) {
     /* Admin top bar: icons only, so everything fits on one row and "Log out" stays on the bar */
@@ -843,6 +857,9 @@ p { margin-bottom: var(--sp-12); }
     .stat-grid-dash .stat { flex-direction: column; align-items: flex-start; gap: var(--sp-8); padding: var(--sp-16); min-width: 0; }
     .stat-grid-dash .stat:nth-child(3), .stat-grid-dash .stat:nth-child(6) { grid-column: span 2; }
     .stat-grid-dash .stat:nth-child(3), .stat-grid-dash .stat:nth-child(6) { flex-direction: row; align-items: center; }
+}
+@media (max-width: 700px) {
+    .toast-host { top: 72px; }
 }
 @media (max-width: 360px) {
     .admin-tag { display: none; }
