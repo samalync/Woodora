@@ -1,0 +1,8 @@
+<%# The items and total at checkout. Shown in the side column on large screens and in a fold-out on phones. Needs: cart %>
+<ul class="summary-list">
+    <% cart.items.forEach(function (item) { %>
+        <li><img src="/images/<%= item.image %>" alt=""><span><%= item.name %> <small class="muted">&times; <%= item.quantity %></small></span><strong><%= rwf(item.lineTotal) %></strong></li>
+    <% }) %>
+</ul>
+<p class="row cart-total"><span>Total</span><strong><%= rwf(cart.total) %></strong></p>
+<p><a href="/cart">&larr; Edit cart</a></p>

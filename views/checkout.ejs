@@ -4,6 +4,10 @@
     <%- include('partials/checkout-steps', { step: 2 }) %>
 </section>
 <section class="section checkout-layout">
+    <details class="card checkout-summary-fold">
+        <summary><span>Order summary</span><strong><%= rwf(cart.total) %></strong></summary>
+        <%- include('partials/checkout-summary', { cart }) %>
+    </details>
     <form action="/checkout" method="post" class="card" novalidate>
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <%- include('partials/error-summary', { errors }) %>
@@ -31,18 +35,13 @@
             <% }) %>
             <% if (errors.method) { %><p class="error-text" id="method-error"><%= errors.method %></p><% } %>
         </fieldset>
+        <p class="row place-total"><span>Total to pay</span><strong><%= rwf(cart.total) %></strong></p>
         <button type="submit" class="btn btn-block btn-large">Place order</button>
     </form>
 
-    <aside class="card summary">
+    <aside class="card summary checkout-aside">
         <h2>Order summary</h2>
-        <ul class="summary-list">
-            <% cart.items.forEach(function (item) { %>
-                <li><img src="/images/<%= item.image %>" alt=""><span><%= item.name %> <small class="muted">&times; <%= item.quantity %></small></span><strong><%= rwf(item.lineTotal) %></strong></li>
-            <% }) %>
-        </ul>
-        <p class="row cart-total"><span>Total</span><strong><%= rwf(cart.total) %></strong></p>
-        <p><a href="/cart">&larr; Edit cart</a></p>
+        <%- include('partials/checkout-summary', { cart }) %>
     </aside>
 </section>
 <%- include('partials/footer') %>

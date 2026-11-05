@@ -431,6 +431,12 @@ p { margin-bottom: var(--sp-12); }
 .checkout-layout { display: grid; grid-template-columns: 2fr 1fr; gap: var(--sp-32); align-items: start; }
 .checkout-layout h2 .num { display: inline-flex; width: 30px; height: 30px; border-radius: 50%; background: var(--brown); color: var(--white); font-size: var(--fs-ui); align-items: center; justify-content: center; margin-right: var(--sp-8); font-family: var(--sans); vertical-align: 2px; }
 .checkout-layout form h2:not(:first-child) { margin-top: var(--sp-24); }
+.checkout-summary-fold { display: none; padding: var(--sp-16) var(--sp-20); }
+.checkout-summary-fold summary { display: flex; align-items: center; gap: var(--sp-12); min-height: var(--control-md); cursor: pointer; font-weight: bold; }
+.checkout-summary-fold summary span { flex: 1; }
+.checkout-summary-fold summary::after { content: "+"; font-size: var(--fs-xl); line-height: 1; color: var(--gold-dark); }
+.checkout-summary-fold[open] summary::after { content: "\2212"; }
+.place-total { font-size: var(--fs-md); margin: var(--sp-16) 0 var(--sp-4); }
 .summary-list { list-style: none; }
 .summary-list li { display: flex; align-items: center; gap: var(--sp-12); padding: var(--sp-12) 0; border-bottom: 1px solid var(--line); }
 .summary-list li span { flex: 1; }
@@ -884,6 +890,12 @@ p { margin-bottom: var(--sp-12); }
 }
 @media (max-width: 360px) {
     .admin-tag { display: none; }
+}
+
+/* Checkout on phones and tablets: the summary folds out above the form instead of sitting after it */
+@media (max-width: 1000px) {
+    .checkout-summary-fold { display: block; }
+    .checkout-aside { display: none; }
 }
 
 /* Phones and tablets: everything you can tap is at least 44px tall, using padding so layouts barely shift */
