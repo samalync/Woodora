@@ -54,7 +54,7 @@
                         <form action="/cart/remove" method="post">
                             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                             <input type="hidden" name="productId" value="<%= item.id %>">
-                            <button type="submit" class="btn btn-ghost-danger btn-small"><%- include('partials/icon', { name: 'trash' }) %> Remove</button>
+                            <button type="submit" class="btn btn-ghost-danger btn-small"><%- include('partials/icon', { name: 'trash' }) %> <span class="btn-text">Remove</span></button>
                         </form>
                     </td>
                 </tr>
@@ -71,6 +71,11 @@
             <a href="/checkout" class="btn btn-block btn-large">Proceed to Checkout</a>
             <a href="/products" class="btn btn-outline btn-block">Continue shopping</a>
         </aside>
+    </div>
+    <%# Phones only: the total and the next step stay on screen while scrolling the cart %>
+    <div class="cart-sticky">
+        <span class="cart-sticky-total"><small>Total</small><strong><%= rwf(cart.total) %></strong></span>
+        <a href="/checkout" class="btn">Checkout</a>
     </div>
 <% } %>
 </section>

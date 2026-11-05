@@ -422,6 +422,7 @@ p { margin-bottom: var(--sp-12); }
 .qty-control button:disabled { color: var(--disabled-text); cursor: not-allowed; }
 .qty-number { min-width: 40px; text-align: center; font-weight: bold; }
 
+.cart-sticky { display: none; }
 .cart-layout { display: grid; grid-template-columns: 1fr 340px; gap: var(--sp-32); align-items: start; }
 .cart-summary { position: sticky; top: 100px; }
 .row { display: flex; justify-content: space-between; gap: var(--sp-12); }
@@ -860,6 +861,26 @@ p { margin-bottom: var(--sp-12); }
 }
 @media (max-width: 700px) {
     .toast-host { top: 72px; }
+}
+@media (max-width: 700px) {
+    /* Cart: compact rows instead of a table with a label on every line */
+    .cart-table tr { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "product remove" "qty price" "qty subtotal"; gap: var(--sp-4) var(--sp-12); align-items: center; padding: var(--sp-16) var(--sp-12); }
+    .cart-table td, .cart-table td.actions { display: block; width: auto; padding: 0; text-align: left; }
+    .cart-table td[data-label]::before { display: none; }
+    .cart-table td[data-label="Product"] { grid-area: product; min-width: 0; }
+    .cart-table td[data-label="Quantity"] { grid-area: qty; }
+    .cart-table td[data-label="Price"] { grid-area: price; text-align: right; color: var(--muted); font-size: var(--fs-sm); }
+    .cart-table td[data-label="Price"]::after { content: " each"; }
+    .cart-table td[data-label="Subtotal"] { grid-area: subtotal; text-align: right; }
+    .cart-table td.actions { grid-area: remove; }
+    .cart-table .qty-wrap { align-items: flex-start; }
+    .cart-table .actions .btn { width: var(--control-md); padding: 0; margin: 0; }
+    .cart-table .btn-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .cart-sticky { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-16); position: sticky; bottom: 0; z-index: 40; margin: var(--sp-16) calc(-1 * var(--sp-16)) calc(-1 * var(--sp-40)); padding: var(--sp-8) var(--sp-16); background: var(--paper-solid); border-top: 1px solid var(--line); box-shadow: 0 -4px 14px var(--shadow-soft); }
+    .cart-sticky-total { display: flex; flex-direction: column; line-height: 1.25; }
+    .cart-sticky-total small { color: var(--muted); font-size: var(--fs-xs); }
+    .cart-sticky-total strong { font-size: var(--fs-lg); }
+    .cart-sticky .btn { flex: none; }
 }
 @media (max-width: 360px) {
     .admin-tag { display: none; }
