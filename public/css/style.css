@@ -48,8 +48,10 @@
     /* ---- Lines and controls ---- */
     --line: #e6dcc9;
     --line-dark: #5a4a38;
-    --field-border: #c9bba5;
-    --field-border-hover: #a99979;
+    --field-border: #8f7f66;         /* 3.9:1 on white, so fields are clearly visible */
+    --field-border-hover: #75654d;
+    --focus-outer: #2b1f14;          /* focus ring: the dark edge shows on light backgrounds... */
+    --focus-inner: #fff;             /* ...and the light edge shows on dark ones */
     --switch-off: #a39279;
     --disabled: #b5a999;
     --disabled-text: #bbb;
@@ -89,7 +91,7 @@
     --overlay-craft: rgba(30, 20, 10, 0.68);
     --overlay-mid: rgba(30, 20, 10, 0.45);
     --overlay-faint: rgba(30, 20, 10, 0.08);
-    --focus-glow: rgba(148, 98, 19, 0.2);
+    --focus-glow: rgba(148, 98, 19, 0.2);    /* soft halo around the current checkout step */
     --btn-shadow: rgba(111, 74, 14, 0.25);
     --shadow-faint: rgba(70, 45, 20, 0.07);
     --shadow-soft: rgba(70, 45, 20, 0.12);
@@ -176,7 +178,7 @@ h2 { font-size: var(--fs-2xl); margin-bottom: var(--sp-16); }
 h3 { font-size: var(--fs-lg); margin-bottom: var(--sp-8); }
 p { margin-bottom: var(--sp-12); }
 
-:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+:focus-visible { outline: 3px solid var(--focus-outer); outline-offset: 2px; box-shadow: 0 0 0 2px var(--focus-inner); }
 
 .icon { width: 1.15em; height: 1.15em; flex: none; vertical-align: -0.2em; }
 .skip-link { position: absolute; left: -999px; top: 0; background: var(--brown); color: var(--white); padding: var(--sp-12) var(--sp-16); z-index: 200; }
@@ -420,6 +422,7 @@ p { margin-bottom: var(--sp-12); }
 .qty-control { display: inline-flex; align-items: center; border: 1px solid var(--field-border); border-radius: var(--radius-pill); overflow: hidden; background: var(--white); align-self: flex-start; }
 .qty-control button { width: 38px; height: 38px; border: none; background: transparent; font-size: var(--fs-md); cursor: pointer; color: var(--brown); transition: background var(--ease); }
 .qty-control button:hover:not(:disabled) { background: var(--tint-strong); }
+.qty-control button:focus-visible { outline-offset: -3px; }
 .qty-control button:disabled { color: var(--disabled-text); cursor: not-allowed; }
 .qty-number { min-width: 40px; text-align: center; font-weight: bold; }
 
@@ -450,6 +453,8 @@ p { margin-bottom: var(--sp-12); }
 .method { display: flex; gap: var(--sp-16); align-items: center; padding: var(--sp-16) var(--sp-16); border: 1px solid var(--line); border-radius: var(--radius); margin-bottom: var(--sp-12); cursor: pointer; background: var(--white); transition: border-color var(--ease), background var(--ease); }
 .method:hover { border-color: var(--gold-light); }
 .method:has(input:checked) { border-color: var(--gold); background: var(--selected-bg); box-shadow: 0 0 0 1px var(--gold); }
+.method:has(input:focus-visible) { outline: 3px solid var(--focus-outer); outline-offset: 2px; }
+.method input:focus-visible { outline: none; box-shadow: none; }
 .method input { accent-color: var(--gold); width: 18px; height: 18px; }
 .method-icon { display: inline-flex; width: 42px; height: 42px; border-radius: 50%; background: var(--tint); color: var(--gold-dark); align-items: center; justify-content: center; flex: none; }
 .method small { display: block; color: var(--muted); }
@@ -471,7 +476,7 @@ p { margin-bottom: var(--sp-12); }
 .field small { display: block; margin-bottom: var(--sp-4); }
 .field input, .field select, .field textarea { width: 100%; padding: var(--sp-12) var(--sp-16); border: 1px solid var(--field-border); border-radius: var(--radius-sm); font-family: inherit; font-size: var(--fs-base); background: var(--white); color: var(--ink); transition: border-color var(--ease), box-shadow var(--ease); }
 .field input:hover, .field select:hover, .field textarea:hover { border-color: var(--field-border-hover); }
-.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px var(--focus-glow); }
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--gold); }
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-16); }
 .has-error input, .has-error select, .has-error textarea { border-color: var(--danger); background: var(--danger-soft); }
 .error-text { color: var(--danger); font-size: var(--fs-sm); margin: var(--sp-4) 0 0; font-weight: bold; }
@@ -660,7 +665,7 @@ p { margin-bottom: var(--sp-12); }
 .switch-track::after { content: ''; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: var(--white); transition: transform var(--ease); box-shadow: 0 1px 3px var(--shadow-black); }
 .switch input:checked + .switch-track { background: var(--success); }
 .switch input:checked + .switch-track::after { transform: translateX(20px); }
-.switch input:focus-visible + .switch-track { outline: 3px solid var(--gold); outline-offset: 2px; }
+.switch input:focus-visible + .switch-track { outline: 3px solid var(--focus-outer); outline-offset: 2px; box-shadow: 0 0 0 2px var(--focus-inner); }
 .switch-state { min-width: 28px; }
 .switch-state-on { display: none; color: var(--success); }
 .switch-state-off { color: var(--muted); }
