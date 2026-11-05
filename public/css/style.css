@@ -799,3 +799,15 @@ p { margin-bottom: var(--sp-12); }
     .consent-actions { justify-content: flex-end; }
     .notif-panel { position: fixed; left: 12px; right: 12px; top: 60px; width: auto; max-width: none; }
 }
+
+/* ---------- 15. PHONE ADJUSTMENTS (last, so they win over the rules above) ---------- */
+@media (max-width: 700px) {
+    /* Admin top bar: icons only, so everything fits on one row and "Log out" stays on the bar */
+    .topbar-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .admin-topbar .logo { min-width: 0; }
+    .admin-topbar-actions { gap: var(--sp-4); flex: none; }
+    .topbar-link, .notif-button { width: 44px; height: 44px; justify-content: center; }
+}
+@media (max-width: 360px) {
+    .admin-tag { display: none; }
+}

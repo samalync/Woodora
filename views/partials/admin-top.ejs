@@ -31,11 +31,11 @@
             </div>
             <span class="sr-only" role="status" aria-live="polite" data-notif-announce></span>
         </div>
-        <a href="/" target="_blank" rel="noopener" class="topbar-link"><%- include('icon', { name: 'store' }) %> View store</a>
+        <a href="/" target="_blank" rel="noopener" class="topbar-link"><%- include('icon', { name: 'store' }) %> <span class="topbar-label">View store</span></a>
         <span class="topbar-user"><%= currentUser.name %></span>
         <form action="/logout" method="post" class="inline-form">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <button type="submit" class="topbar-link topbar-button"><%- include('icon', { name: 'logout' }) %> Log out</button>
+            <button type="submit" class="topbar-link topbar-button"><%- include('icon', { name: 'logout' }) %> <span class="topbar-label">Log out</span></button>
         </form>
     </div>
 </header>
