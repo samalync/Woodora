@@ -446,6 +446,17 @@ p { margin-bottom: var(--sp-12); }
 .method-icon { display: inline-flex; width: 42px; height: 42px; border-radius: 50%; background: var(--tint); color: var(--gold-dark); align-items: center; justify-content: center; flex: none; }
 .method small { display: block; color: var(--muted); }
 
+/* Order confirmation panel */
+.confirm-section { padding-bottom: 0; }
+.confirm { display: flex; gap: var(--sp-20); align-items: flex-start; background: var(--success-soft); border: 1px solid var(--success-border); border-radius: var(--radius-lg); padding: var(--sp-24) var(--sp-32); box-shadow: var(--shadow); }
+.confirm-icon { display: inline-flex; flex: none; width: 48px; height: 48px; border-radius: 50%; align-items: center; justify-content: center; background: var(--success); color: var(--white); }
+.confirm-icon .icon { width: 26px; height: 26px; }
+.confirm-text { min-width: 0; }
+.confirm-text h2 { font-size: var(--fs-xl); margin-bottom: var(--sp-8); }
+.confirm-next { margin: var(--sp-12) 0 0 var(--sp-20); }
+.confirm-next li { margin-bottom: var(--sp-4); }
+.confirm .button-row { margin-top: var(--sp-16); }
+
 /* ---------- 8. FORMS ---------- */
 .field { margin-bottom: var(--sp-16); }
 .field label { display: block; font-weight: bold; font-size: var(--fs-sm); margin-bottom: var(--sp-4); }
@@ -812,6 +823,9 @@ p { margin-bottom: var(--sp-12); }
     .admin-topbar .logo { min-width: 0; }
     .admin-topbar-actions { gap: var(--sp-4); flex: none; }
     .topbar-link, .notif-button { width: 44px; height: 44px; justify-content: center; }
+}
+@media (max-width: 700px) {
+    .confirm { flex-direction: column; gap: var(--sp-12); padding: var(--sp-20); }
 }
 @media (max-width: 360px) {
     .admin-tag { display: none; }

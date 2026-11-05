@@ -4,6 +4,36 @@
     <%- include('partials/checkout-steps', { step: (order.payment_status === 'Paid' || order.payment_method === 'cod') ? 4 : 3 }) %>
     <p><%- include('partials/status-badges', { order: order }) %></p>
 </section>
+<%
+const isCod = order.payment_method === 'cod';
+const isDelivered = order.order_status === 'Delivered';
+const isConfirmed = order.payment_status === 'Paid' || isCod;
+%>
+<% if (isConfirmed) { %>
+<section class="section confirm-section">
+    <div class="confirm">
+        <span class="confirm-icon"><%- include('partials/icon', { name: 'check' }) %></span>
+        <div class="confirm-text">
+            <% if (isDelivered) { %>
+                <h2>Your order has been delivered</h2>
+                <p>Thank you for choosing Woodora, <%= order.customer_name %>. We hope you enjoy your wooden pieces.</p>
+            <% } else { %>
+                <h2>Thank you, <%= order.customer_name %>! We have your order.</h2>
+                <p><%= isCod && order.payment_status !== 'Paid' ? 'You pay in cash when it arrives, so there is nothing more to do now.' : 'Your simulated payment went through. No real money was charged.' %></p>
+                <ol class="confirm-next">
+                    <li>We prepare your order.</li>
+                    <li>We deliver it to <%= order.address %>, <%= order.city %>.</li>
+                    <li>You can follow its status any time in My Orders.</li>
+                </ol>
+            <% } %>
+            <div class="button-row">
+                <a href="/orders" class="btn">View My Orders</a>
+                <a href="/products" class="btn btn-outline">Continue shopping</a>
+            </div>
+        </div>
+    </div>
+</section>
+<% } %>
 <section class="section checkout-layout">
     <div class="card">
         <h2>Items</h2>
