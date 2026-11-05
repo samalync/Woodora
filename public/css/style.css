@@ -169,6 +169,7 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -1; background: 
 
 main { flex: 1; }
 img { max-width: 100%; display: block; }
+[hidden] { display: none !important; } /* the rule above must not bring hidden images back */
 a { color: var(--gold-dark); transition: color var(--ease); }
 a:hover { color: var(--brown-dark); }
 
@@ -530,7 +531,9 @@ p { margin-bottom: var(--sp-12); }
 .auth-form .muted { margin-bottom: var(--sp-20); }
 
 /* ---------- 10. ORDERS & STATUS BADGES ---------- */
-.badge { display: inline-block; padding: var(--sp-4) var(--sp-12); border-radius: var(--radius-pill); font-size: var(--fs-xs); font-weight: bold; margin: var(--sp-2) var(--sp-4) var(--sp-2) 0; white-space: nowrap; }
+.badge { display: inline-flex; align-items: center; gap: var(--sp-4); padding: var(--sp-4) var(--sp-12); border-radius: var(--radius-pill); font-size: var(--fs-xs); font-weight: bold; margin: var(--sp-2) var(--sp-4) var(--sp-2) 0; white-space: nowrap; }
+.badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
+.badge-pay-due { background: var(--tint-strong); color: var(--brown-dark); }
 .badge-pending { background: var(--warn-bg); color: var(--warn-text); }
 .badge-paid { background: var(--success-bg); color: var(--success-text); }
 .badge-delivered { background: var(--info-bg); color: var(--info-text); }

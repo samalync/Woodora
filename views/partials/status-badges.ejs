@@ -1,2 +1,5 @@
+<%# Order and payment status. Cash on Delivery that has not arrived yet is expected, so it is not shown as a problem. %>
+<% const dueOnDelivery = order.payment_method === 'cod' && order.payment_status === 'Unpaid' && order.order_status !== 'Delivered'; %>
 <span class="badge badge-<%= order.order_status.toLowerCase() %>">Order: <%= order.order_status %></span>
-<span class="badge badge-pay-<%= order.payment_status.toLowerCase() %>">Payment: <%= order.payment_status %></span>
+<% if (dueOnDelivery) { %><span class="badge badge-pay-due">Payment: On delivery</span>
+<% } else { %><span class="badge badge-pay-<%= order.payment_status.toLowerCase() %>">Payment: <%= order.payment_status %></span><% } %>
