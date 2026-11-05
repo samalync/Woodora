@@ -6,20 +6,18 @@ const low = product.stock > 0 && product.stock <= 5;
 <article class="product-card <%= out ? 'is-sold-out' : '' %>">
     <a href="/products/<%= product.id %>" class="product-image" tabindex="-1" aria-hidden="true">
         <img src="/images/<%= product.image %>" alt="" loading="lazy">
-        <span class="stock-tag <%= out ? 'stock-out' : (low ? 'stock-low' : 'stock-ok') %>">
-            <%= out ? 'Sold out' : (low ? 'Only ' + product.stock + ' left' : 'In stock') %>
-        </span>
     </a>
+    <span class="stock-tag <%= out ? 'stock-out' : (low ? 'stock-low' : 'stock-ok') %>">
+        <%= out ? 'Sold out' : (low ? 'Only ' + product.stock + ' left' : 'In stock') %>
+    </span>
     <div class="product-info">
         <p class="product-category"><%= product.category %></p>
         <h3><a href="/products/<%= product.id %>"><%= product.name %></a></h3>
         <p class="product-description"><%= product.description %></p>
         <div class="product-bottom">
             <p class="product-price"><%= rwf(product.price) %></p>
-            <p class="stock-line <%= out ? 'stock-out' : (low ? 'stock-low' : 'stock-ok') %>"><%= out ? 'Out of stock' : product.stock + ' available' %></p>
         </div>
         <div class="card-actions">
-            <a href="/products/<%= product.id %>" class="btn btn-outline btn-small">Details</a>
             <% if (!out) { %>
                 <form action="/cart/add" method="post" class="inline-form">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
@@ -31,6 +29,7 @@ const low = product.stock > 0 && product.stock <= 5;
             <% } else { %>
                 <button type="button" class="btn btn-small" disabled>Sold out</button>
             <% } %>
+            <a href="/products/<%= product.id %>" class="card-link" aria-label="Details: <%= product.name %>">Details</a>
         </div>
     </div>
 </article>
