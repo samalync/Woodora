@@ -920,7 +920,7 @@ p { margin-bottom: var(--sp-12); }
     .btn, .btn-small { min-height: var(--control-md); }
     .logo, .pill, .admin-sidebar a, .back-link, .breadcrumb a, .notif-markall, .notif-read, .switch, .checkbox { min-height: var(--control-md); }
     .pill, .breadcrumb a, .back-link, .notif-markall, .notif-read { display: inline-flex; align-items: center; }
-    main p > a:only-child:not(.btn), .site-footer p > a, .panel-head a { display: inline-flex; align-items: center; min-height: var(--control-md); }
+    main p > a:only-child:not(.btn), .site-footer p > a, .panel-head a, .cart-product a { display: inline-flex; align-items: center; min-height: var(--control-md); }
     .site-footer p:has(> a) { margin-bottom: 0; }
     .qty-control button, .flash-close { width: var(--control-md); height: var(--control-md); flex: none; }
     .notif-foot { padding: var(--sp-12) var(--sp-16); }
