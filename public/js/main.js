@@ -34,3 +34,17 @@ document.querySelectorAll('select[data-preview]').forEach(function (select) {
         else { image.hidden = true; }
     });
 });
+
+// After a failed form submit, take the user to the list of problems (the server decides what is wrong).
+var errorSummary = document.querySelector('[data-error-summary]');
+if (errorSummary) {
+    errorSummary.focus();
+    errorSummary.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', function (event) {
+            var target = document.getElementById(link.getAttribute('href').slice(1));
+            if (!target) return;
+            event.preventDefault();
+            target.focus();
+        });
+    });
+}

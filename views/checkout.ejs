@@ -6,6 +6,7 @@
 <section class="section checkout-layout">
     <form action="/checkout" method="post" class="card" novalidate>
         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <%- include('partials/error-summary', { errors }) %>
         <h2><span class="num">1</span> Contact and delivery</h2>
         <%- include('partials/field', { name: 'name', label: 'Full name', type: 'text', values, errors, attrs: 'required maxlength="60"' }) %>
         <div class="field-row">
@@ -17,7 +18,7 @@
 
         <h2><span class="num">2</span> Payment method</h2>
         <div class="notice">Online payments on this website are <strong>simulations</strong>. No real money is charged and no card or PIN is stored.</div>
-        <fieldset class="methods <%= errors.method ? 'has-error' : '' %>">
+        <fieldset id="method" tabindex="-1" class="methods <%= errors.method ? 'has-error' : '' %>" <%- errors.method ? 'aria-describedby="method-error"' : '' %>>
             <legend class="sr-only">Payment method</legend>
             <% const methodIcons = { momo: 'phone', card: 'card', cod: 'cash' }; %>
             <% Object.keys(methods).forEach(function (key) { %>
@@ -28,7 +29,7 @@
                     <small><%= key === 'momo' ? 'Approve a payment request on your phone (demo).' : key === 'card' ? 'Enter test card details on the next page (demo).' : 'Pay in cash when your order arrives.' %></small></span>
                 </label>
             <% }) %>
-            <% if (errors.method) { %><p class="error-text"><%= errors.method %></p><% } %>
+            <% if (errors.method) { %><p class="error-text" id="method-error"><%= errors.method %></p><% } %>
         </fieldset>
         <button type="submit" class="btn btn-block btn-large">Place order</button>
     </form>

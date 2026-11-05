@@ -1,10 +1,15 @@
 <%# A labelled form field with its error message. Needs: name, label, type, values, errors. Optional: attrs, hint %>
+<%
+const hasHint = typeof hint !== 'undefined' && hint;
+const describedBy = [hasHint ? name + '-hint' : '', errors[name] ? name + '-error' : ''].filter(Boolean).join(' ');
+%>
 <div class="field <%= errors[name] ? 'has-error' : '' %>">
     <label for="<%= name %>"><%= label %></label>
-    <% if (typeof hint !== 'undefined' && hint) { %><small class="muted" id="<%= name %>-hint"><%= hint %></small><% } %>
+    <% if (hasHint) { %><small class="muted" id="<%= name %>-hint"><%= hint %></small><% } %>
     <input type="<%= type %>" id="<%= name %>" name="<%= name %>"
            value="<%= (type === 'password' || !values[name]) ? '' : values[name] %>"
            <%- typeof attrs !== 'undefined' ? attrs : '' %>
-           <%- errors[name] ? 'aria-invalid="true" aria-describedby="' + name + '-error"' : '' %>>
+           <%- errors[name] ? 'aria-invalid="true"' : '' %>
+           <%- describedBy ? 'aria-describedby="' + describedBy + '"' : '' %>>
     <% if (errors[name]) { %><p class="error-text" id="<%= name %>-error"><%= errors[name] %></p><% } %>
 </div>

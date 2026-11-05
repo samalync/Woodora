@@ -11,6 +11,7 @@
         <% if (!momoStep) { %>
             <form action="/orders/<%= order.id %>/pay/momo" method="post" class="card" novalidate>
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <%- include('partials/error-summary', { errors }) %>
                 <h2>Mobile Money</h2>
                 <%- include('partials/field', { name: 'momoPhone', label: 'Mobile Money phone number', type: 'tel', values, errors, attrs: 'required placeholder="0788 123 456"', hint: 'We will pretend to send a payment request to this number.' }) %>
                 <button type="submit" class="btn btn-block btn-large">Send payment request</button>
@@ -30,6 +31,7 @@
     <% } else { %>
         <form action="/orders/<%= order.id %>/pay/card" method="post" class="card" novalidate autocomplete="off">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <%- include('partials/error-summary', { errors }) %>
             <h2>Card payment</h2>
             <p class="muted">Demo card: 4242 4242 4242 4242, any future date, any 3 digits.</p>
             <%- include('partials/field', { name: 'cardName', label: 'Name on card', type: 'text', values, errors, attrs: 'required maxlength="60"' }) %>

@@ -7,6 +7,7 @@
 <section class="section two-col">
     <div class="card form-card">
         <h2>Send us a message</h2>
+        <%- include('partials/error-summary', { errors }) %>
         <form action="/contact" method="post" novalidate>
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <div class="field-row">
@@ -16,8 +17,8 @@
             <%- include('partials/field', { name: 'subject', label: 'Subject', type: 'text', values, errors, attrs: 'required maxlength="100"' }) %>
             <div class="field <%= errors.message ? 'has-error' : '' %>">
                 <label for="message">Message</label>
-                <textarea id="message" name="message" rows="6" required maxlength="1000"><%= values.message %></textarea>
-                <% if (errors.message) { %><p class="error-text"><%= errors.message %></p><% } %>
+                <textarea id="message" name="message" rows="6" required maxlength="1000" <%- errors.message ? 'aria-invalid="true" aria-describedby="message-error"' : '' %>><%= values.message %></textarea>
+                <% if (errors.message) { %><p class="error-text" id="message-error"><%= errors.message %></p><% } %>
             </div>
             <button type="submit" class="btn btn-block btn-large">Send message</button>
         </form>

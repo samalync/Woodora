@@ -10,6 +10,7 @@
         <div class="auth-form">
             <h1>Create your account</h1>
             <p class="muted">Customer accounts only.</p>
+            <%- include('partials/error-summary', { errors }) %>
             <form action="/register" method="post" novalidate>
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <%- include('partials/field', { name: 'name', label: 'Full name', type: 'text', values, errors, attrs: 'required maxlength="60" autocomplete="name"' }) %>

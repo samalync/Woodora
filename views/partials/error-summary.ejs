@@ -1,0 +1,10 @@
+<%# Lists every problem at the top of a form, with links to the fields. public/js/main.js moves keyboard focus here. Needs: errors %>
+<% const problems = Object.keys(errors); %>
+<% if (problems.length > 0) { %>
+    <div class="error-summary" role="alert" tabindex="-1" data-error-summary>
+        <strong><%= problems.length === 1 ? 'Please fix this problem:' : 'Please fix these ' + problems.length + ' problems:' %></strong>
+        <ul>
+            <% problems.forEach(function (key) { %><li><a href="#<%= key %>"><%= errors[key] %></a></li><% }) %>
+        </ul>
+    </div>
+<% } %>
