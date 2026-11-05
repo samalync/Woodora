@@ -139,6 +139,11 @@
     --container-narrow: 680px;
     --container-prose: 760px;
 
+    /* ---- Control heights ---- */
+    --control-sm: 38px;
+    --control-md: 44px;       /* also the minimum tap size on phones and tablets */
+    --control-lg: 52px;
+
     /* ---- Motion ---- */
     --ease: 0.2s ease;
 }
@@ -243,7 +248,7 @@ p { margin-bottom: var(--sp-12); }
 .footer-bottom p { margin: 0; font-size: var(--fs-xs); color: var(--on-dark-faint); }
 
 /* ---------- 3. BUTTONS ---------- */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-8); padding: var(--sp-12) var(--sp-24); background: var(--gold); color: var(--white); border: 1px solid var(--gold); border-radius: var(--radius-pill); text-decoration: none; font-family: inherit; font-size: var(--fs-ui); font-weight: bold; cursor: pointer; transition: background var(--ease), transform var(--ease), box-shadow var(--ease), color var(--ease); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-8); min-height: var(--control-md); line-height: 1.25; padding: var(--sp-8) var(--sp-24); background: var(--gold); color: var(--white); border: 1px solid var(--gold); border-radius: var(--radius-pill); text-decoration: none; font-family: inherit; font-size: var(--fs-ui); font-weight: bold; cursor: pointer; transition: background var(--ease), transform var(--ease), box-shadow var(--ease), color var(--ease); }
 .btn:hover { background: var(--gold-dark); border-color: var(--gold-dark); color: var(--white); transform: translateY(-1px); box-shadow: 0 6px 14px var(--btn-shadow); }
 .btn:active { transform: none; }
 .btn:disabled { background: var(--disabled); border-color: var(--disabled); cursor: not-allowed; transform: none; box-shadow: none; }
@@ -255,8 +260,8 @@ p { margin-bottom: var(--sp-12); }
 .btn-dark:hover { background: var(--black); border-color: var(--black); }
 .btn-ghost-danger { background: transparent; color: var(--danger); border-color: var(--danger-border-soft); }
 .btn-ghost-danger:hover { background: var(--danger); border-color: var(--danger); color: var(--white); box-shadow: none; }
-.btn-small { padding: var(--sp-8) var(--sp-16); font-size: var(--fs-sm); }
-.btn-large { padding: var(--sp-16) var(--sp-32); font-size: var(--fs-base); }
+.btn-small { min-height: var(--control-sm); padding: var(--sp-4) var(--sp-16); font-size: var(--fs-sm); }
+.btn-large { min-height: var(--control-lg); padding: var(--sp-8) var(--sp-32); font-size: var(--fs-base); }
 .btn-block { display: flex; width: 100%; margin-top: var(--sp-12); }
 .main-nav a.btn { color: var(--white); }
 
@@ -809,4 +814,15 @@ p { margin-bottom: var(--sp-12); }
 }
 @media (max-width: 360px) {
     .admin-tag { display: none; }
+}
+
+/* Phones and tablets: everything you can tap is at least 44px tall, using padding so layouts barely shift */
+@media (max-width: 1000px) {
+    .btn, .btn-small { min-height: var(--control-md); }
+    .logo, .pill, .admin-sidebar a, .back-link, .breadcrumb a, .notif-markall, .notif-read, .switch, .checkbox { min-height: var(--control-md); }
+    .pill, .breadcrumb a, .back-link, .notif-markall, .notif-read { display: inline-flex; align-items: center; }
+    main p > a:only-child:not(.btn), .site-footer p > a { display: inline-flex; align-items: center; min-height: var(--control-md); }
+    .site-footer p:has(> a) { margin-bottom: 0; }
+    .qty-control button, .flash-close { width: var(--control-md); height: var(--control-md); flex: none; }
+    .notif-foot { padding: var(--sp-12) var(--sp-16); }
 }
