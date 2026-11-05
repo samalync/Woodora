@@ -65,7 +65,7 @@ Run on a temporary database, on the final code.
 | Customer flow (Mobile Money, card, Cash on Delivery) and admin order-status flow in the browser | Works | Works |
 | Pages with sideways scroll at 390px | 16 of 110 page states | 0 of 110 |
 | Other widths checked: 320, 360, 768, 1024, 1100px | Not measured | No sideways scroll on the 17 pages checked |
-| Text on the photo below AA contrast | 24 of 458 samples | 0 of 412 real text samples |
+| Text on the photo below AA contrast | 24 of 458 samples | 0 real failures in 412 samples (2 false flags, see Known limits) |
 | Axe contrast failures | 16 page states | 0 |
 | Non-inline controls under 44px tall on phones | Many (Add to Cart was 32px) | 0 |
 | Add to Cart from a filtered list | Filter and scroll position lost | Both kept |
