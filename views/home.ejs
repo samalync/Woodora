@@ -1,74 +1,100 @@
 <%- include('partials/header') %>
 
-<div class="hero-band">
-<section class="hero">
-    <div class="hero-content">
-        <p class="small-title">WOODEN KITCHEN &middot; MINDFUL LIVING</p>
-        <h1>Bring Nature Into Your Kitchen.</h1>
-        <p class="hero-text">Discover beautiful wooden kitchen essentials that make everyday cooking feel more natural, thoughtful and meaningful.</p>
+<section class="hero-x">
+    <div class="hero-x-text" data-reveal>
+        <p class="eyebrow"><span class="eyebrow-dot"></span> Wooden kitchen &middot; Mindful living</p>
+        <h1>Bring nature <em>into</em> your kitchen.</h1>
+        <p class="hero-x-lead">Beautiful wooden kitchen essentials, made by local artisans, that make everyday cooking feel more natural, thoughtful and meaningful.</p>
         <div class="button-row">
             <a href="/products" class="btn btn-large">Shop the Collection <%- include('partials/icon', { name: 'arrow' }) %></a>
             <a href="/mission" class="btn btn-outline btn-large">Our Story</a>
         </div>
-        <ul class="hero-points">
-            <li><%- include('partials/icon', { name: 'check' }) %> 100% natural wood</li>
-            <li><%- include('partials/icon', { name: 'check' }) %> Made by local artisans</li>
-            <li><%- include('partials/icon', { name: 'check' }) %> Mobile Money, card or cash</li>
+        <ul class="hero-x-stats">
+            <li><strong>100%</strong><span>natural wood</span></li>
+            <li><strong>Local</strong><span>artisans</span></li>
+            <li><strong>3 ways</strong><span>to pay</span></li>
         </ul>
     </div>
-    <div class="hero-visual" aria-hidden="true">
-        <img class="hero-img hero-img-a" src="/images/utensil-holder.jpeg" alt="">
-        <img class="hero-img hero-img-b" src="/images/cups.jpeg" alt="">
-        <img class="hero-img hero-img-c" src="/images/bowl-set.jpeg" alt="">
-        <div class="hero-badge"><%- include('partials/icon', { name: 'leaf' }) %> <span>Less plastic,<br>more nature</span></div>
+    <div class="hero-x-media" aria-hidden="true">
+        <img class="hx-a" src="/images/spoons.jpeg" alt="">
+        <img class="hx-b" src="/images/cups.jpeg" alt="">
+        <img class="hx-c" src="/images/bowl-set.jpeg" alt="">
+        <div class="hx-chip hx-chip-a"><%- include('partials/icon', { name: 'leaf' }) %> <span><strong>Less plastic</strong><small>more nature</small></span></div>
+        <div class="hx-chip hx-chip-b"><%- include('partials/icon', { name: 'hand' }) %> <span><strong>Handmade</strong><small>with care</small></span></div>
     </div>
 </section>
+
+<div class="ribbon" aria-hidden="true">
+    <div class="ribbon-track">
+        <% for (let i = 0; i < 2; i++) { %>
+            <span>100% natural wood</span><span>&#10022;</span><span>Made by local artisans</span><span>&#10022;</span><span>Plastic-free kitchen</span><span>&#10022;</span><span>Mobile Money, card or cash</span><span>&#10022;</span><span>Delivered to your door</span><span>&#10022;</span>
+        <% } %>
+    </div>
 </div>
 
 <section class="values">
-    <div><%- include('partials/icon', { name: 'leaf' }) %><h3>Natural materials</h3><p>Responsibly sourced wood, finished with care.</p></div>
-    <div><%- include('partials/icon', { name: 'hand' }) %><h3>Crafted by people</h3><p>Every purchase supports local makers.</p></div>
-    <div><%- include('partials/icon', { name: 'truck' }) %><h3>Simple ordering</h3><p>Pay by Mobile Money, card or on delivery.</p></div>
+    <div data-reveal><%- include('partials/icon', { name: 'leaf' }) %><h3>Natural materials</h3><p>Responsibly sourced wood, finished with care.</p></div>
+    <div data-reveal><%- include('partials/icon', { name: 'hand' }) %><h3>Crafted by people</h3><p>Every purchase supports local makers.</p></div>
+    <div data-reveal><%- include('partials/icon', { name: 'truck' }) %><h3>Simple ordering</h3><p>Pay by Mobile Money, card or on delivery.</p></div>
 </section>
 
 <section class="section">
-    <h2 class="section-title">Shop by category</h2>
-    <p class="section-description">Find the right piece for cooking, serving and storing.</p>
+    <div class="section-head" data-reveal>
+        <div>
+            <p class="eyebrow">Categories</p>
+            <h2 class="section-title">Shop by category</h2>
+            <p class="section-description">Find the right piece for cooking, serving and storing.</p>
+        </div>
+        <a href="/products" class="link-arrow">All products <%- include('partials/icon', { name: 'arrow' }) %></a>
+    </div>
     <div class="category-grid">
         <% categories.forEach(function (c) { %>
-            <a href="/products?category=<%= c.id %>" class="category-tile">
+            <a href="/products?category=<%= c.id %>" class="category-tile" data-reveal>
                 <img src="/images/<%= c.image %>" alt="" loading="lazy">
                 <span class="category-label"><strong><%= c.name %></strong><small><%= c.count %> product<%= c.count === 1 ? '' : 's' %></small></span>
+                <span class="category-go" aria-hidden="true"><%- include('partials/icon', { name: 'arrow' }) %></span>
             </a>
         <% }) %>
     </div>
 </section>
 
 <section class="section" id="collection">
-    <h2 class="section-title">Simple Pieces. Natural Beauty.</h2>
-    <p class="section-description">Thoughtful wooden essentials for cooking, serving and sharing.</p>
+    <div class="section-head" data-reveal>
+        <div>
+            <p class="eyebrow">Featured</p>
+            <h2 class="section-title">Simple pieces. Natural beauty.</h2>
+            <p class="section-description">Thoughtful wooden essentials for cooking, serving and sharing.</p>
+        </div>
+        <a href="/products" class="link-arrow">View all products <%- include('partials/icon', { name: 'arrow' }) %></a>
+    </div>
 
     <div class="product-grid featured-grid">
         <% featured.forEach(function (product) { %>
             <%- include('partials/product-card', { product: product }) %>
         <% }) %>
     </div>
-    <p class="center"><a href="/products" class="btn btn-outline">View all products</a></p>
 </section>
 
 <section class="how">
-    <h2 class="section-title">How it works</h2>
+    <div class="section-head" data-reveal>
+        <div>
+            <p class="eyebrow">How it works</p>
+            <h2 class="section-title">From our makers to your table</h2>
+        </div>
+    </div>
     <div class="steps">
-        <div><span>1</span><h3>Choose</h3><p>Browse our wooden collection and add your favourites to the cart.</p></div>
-        <div><span>2</span><h3>Check out</h3><p>Enter your delivery details and pick Mobile Money, card or cash on delivery.</p></div>
-        <div><span>3</span><h3>Receive</h3><p>Follow your order status any time from the My Orders page.</p></div>
+        <div data-reveal><span>01</span><h3>Choose</h3><p>Browse our wooden collection and add your favourites to the cart.</p></div>
+        <div data-reveal><span>02</span><h3>Check out</h3><p>Enter your delivery details and pick Mobile Money, card or cash on delivery.</p></div>
+        <div data-reveal><span>03</span><h3>Receive</h3><p>Follow your order status any time from the My Orders page.</p></div>
     </div>
 </section>
 
 <section class="dark-band">
-    <p class="small-title light">OUR IMPACT</p>
-    <h2>Better Choices Begin With Everyday Moments.</h2>
-    <a href="/impact" class="btn btn-gold btn-large">Discover Our Impact</a>
+    <div class="dark-band-inner" data-reveal>
+        <p class="eyebrow eyebrow-light">Our impact</p>
+        <h2>Better choices begin with everyday moments.</h2>
+        <a href="/impact" class="btn btn-gold btn-large">Discover Our Impact <%- include('partials/icon', { name: 'arrow' }) %></a>
+    </div>
 </section>
 
 <%- include('partials/footer') %>

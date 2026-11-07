@@ -9,9 +9,16 @@ A visual and UX pass on branch `feature/ui-polish`. Every URL, form field and se
 - Font sizes reduced from 24 to a 12-step scale, and similar colours merged, so the design looks more consistent.
 - Dark bands on Home, Mission and Impact changed from neutral black to the brand espresso brown.
 
-**Background and readability**
-- A stronger cream veil now covers the background photo on all pages, and the photo shows clearly only around the home hero.
-- Phone headings lost the separate rounded boxes that were a workaround for the photo.
+**Modern redesign (second pass)**
+- The full-page background photo is gone. Pages now sit on a clean warm off-white, with soft gold glows behind page titles.
+- Fonts are modern system fonts, so nothing is downloaded: Iowan Old Style or Palatino for headings, and the device's own sans-serif (San Francisco, Segoe UI or Roboto) for text. Headings are larger and tighter.
+- New home page: a large headline with a three-photo grid and floating "Less plastic" and "Handmade" labels, a moving ribbon of brand values, a mosaic of category tiles, outlined step numbers (01 to 03), and a rounded dark call-to-action panel.
+- Primary buttons are dark espresso and turn gold on hover. The header is frosted glass, the active page is a dark pill, and the cart is a white pill.
+- Product cards are white with rounded inset photos, and the whole card opens the product. The product page is a large rounded panel.
+- The footer has rounded top corners and a large logo. Form fields are taller and rounder, with a soft gold glow on focus.
+- Sections fade up gently as you scroll. This only happens when JavaScript runs, and it is switched off for people who choose reduced motion.
+
+**Background and readability (first pass)**
 - Category tiles have a stronger dark gradient behind their text.
 - The Mission photo band uses a sharper photo under a dark overlay, so the quote is readable.
 
@@ -78,4 +85,4 @@ Run on a temporary database, on the final code.
 - **Contrast sampling:** text-on-photo contrast was sampled at one scroll position, using the worst 10% of pixels. The automated check also flags the "1 Cart" step on `/cart` because it picks up the gold number circle. That isn't a real failure.
 - **Some pages got longer:** the mobile admin dashboard went from 2,247px to 2,620px, the home page from 5,061px to 5,199px on mobile, and desktop checkout from 1,604px to 1,738px. The mobile cart (2,349px to 2,178px) and mobile checkout (2,794px to 2,675px) got shorter.
 - **Small accessibility items remain:** heading order, the logo's accessible name, the top bar outside a landmark, empty table headers and two unnamed `<aside>` areas. These audit items (A6, A8) weren't in the top 15.
-- **Not in this pass:** the other audit items outside the top 15, such as the raw UTC dates on order pages (C6). New product photos, the font change and the registration redirect also aren't included.
+- **Not in this pass:** the other audit items outside the top 15, such as the raw UTC dates on order pages (C6). New product photos and the registration redirect also aren't included.

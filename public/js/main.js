@@ -121,3 +121,22 @@ document.querySelectorAll('form[action="/cart/add"]').forEach(function (form) {
             });
     });
 });
+
+// Sections fade up gently as they scroll into view. Without JavaScript, or with reduced motion, everything is simply shown.
+(function () {
+    var items = document.querySelectorAll('[data-reveal]');
+    if (!items.length || !('IntersectionObserver' in window)) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.documentElement.classList.add('js-reveal');
+    var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('is-in');
+            observer.unobserve(entry.target);
+        });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    items.forEach(function (el, i) {
+        el.style.transitionDelay = (i % 4) * 70 + 'ms';
+        observer.observe(el);
+    });
+})();
